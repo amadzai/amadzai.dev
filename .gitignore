@@ -16,3 +16,6 @@ node_modules/
 # editor and OS files
 .idea/
 .DS_Store
+
+# Claude Code
+CLAUDE.md
