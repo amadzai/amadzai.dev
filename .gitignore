@@ -22,3 +22,6 @@ CLAUDE.md
 
 # Private
 docs/private
+
+# Personal editor settings
+.vscode/settings.json
