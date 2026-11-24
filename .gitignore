@@ -25,3 +25,5 @@ docs/private
 
 # Personal editor settings
 .vscode/settings.json
+# Playwright MCP screenshots and snapshots
+.playwright-mcp/
