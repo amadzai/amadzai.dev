@@ -16,6 +16,8 @@ const work = defineCollection({
         company: z.string().trim().min(1),
         role: z.string().trim().min(1),
         url: z.url({ protocol: /^https$/ }),
+        // Hover colour for the company name, from the logo; keep it at 3:1 or more on paper.
+        brand: z.string().regex(/^#[0-9a-f]{6}$/i, "Use a #rrggbb colour"),
         start: month,
         end: month,
         logo: image(),

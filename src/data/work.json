@@ -6,6 +6,7 @@
     "start": "2026-06",
     "end": "2026-12",
     "url": "https://sunwayproperty.com/",
+    "brand": "#ed1c24",
     "logo": "../assets/logos/sunway-property.png"
   },
   {
@@ -15,6 +16,7 @@
     "start": "2024-09",
     "end": "2026-03",
     "url": "https://www.elvtd.io/",
+    "brand": "#7d5edd",
     "logo": "../assets/logos/elvtd.png"
   },
   {
@@ -24,6 +26,7 @@
     "start": "2024-04",
     "end": "2024-09",
     "url": "https://www.petronas.com/",
+    "brand": "#00807b",
     "logo": "../assets/logos/petronas.svg"
   }
 ]
