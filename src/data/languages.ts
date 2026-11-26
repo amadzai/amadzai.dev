@@ -1,3 +1,5 @@
+import { stackColours } from "./stack";
+
 // Language breakdown colours: the site palette and its tints, so the bar sits with the page.
 // A language not listed takes mute.
 export const languageColours: Readonly<Record<string, string>> = {
@@ -5,8 +7,10 @@ export const languageColours: Readonly<Record<string, string>> = {
   Python: "var(--color-yellow)",
   // The site red, a little redder.
   Ruby: "#a5372f",
-  Solidity: "var(--color-ink)",
-  Scala: "var(--color-ochre)",
+  // Same grey as its stack pill.
+  Solidity: stackColours.Solidity.colour,
+  // Between the site red and yellow, so it reads red but stays apart from Ruby.
+  Scala: "#c25a36",
   // Halfway between a palette colour and paper.
   JavaScript: "#dbbf80",
   Astro: "#ca9380",
