@@ -1,5 +1,13 @@
 ---
 import { buildYear, contactLinks, site } from "../data/site";
+
+// Each link's hero button colour. Yellow text is too faint on paper, so GitHub darkens it halfway to ink.
+const hoverColour: Record<(typeof contactLinks)[number]["label"], string> = {
+  Email: "hover:text-red focus-visible:text-red",
+  GitHub:
+    "hover:text-[color-mix(in_srgb,var(--color-yellow),var(--color-ink))] focus-visible:text-[color-mix(in_srgb,var(--color-yellow),var(--color-ink))]",
+  LinkedIn: "hover:text-blue focus-visible:text-blue",
+};
 ---
 
 <footer class="mt-22 phone:mt-16 flex flex-wrap justify-between gap-4 border-t-3 border-ink pt-5 text-[15px]">
@@ -11,7 +19,14 @@ import { buildYear, contactLinks, site } from "../data/site";
   </span>
   <nav class="flex gap-4" aria-label="Footer">
     {contactLinks.map(({ label, href }) => (
-      <a href={href} target="_blank" class="underline">
+      <a
+        href={href}
+        target="_blank"
+        class:list={[
+          "underline transition-colors duration-200",
+          hoverColour[label],
+        ]}
+      >
         {label}
       </a>
     ))}

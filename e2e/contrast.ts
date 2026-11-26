@@ -1,11 +1,12 @@
-// WCAG contrast ratio of two computed CSS colours, e.g. "rgb(27, 25, 22)".
+// WCAG contrast ratio of two computed CSS colours: "rgb(27, 25, 22)", or "color(srgb 0.1 0.2 0.3)" from color-mix().
 export function contrast(a: string, b: string): number {
   const luminance = (colour: string): number => {
+    const scale = colour.startsWith("color(srgb") ? 1 : 255;
     const [red, green, blue] = colour
-      .match(/\d+/g)!
+      .match(/[\d.]+/g)!
       .slice(0, 3)
       .map((value) => {
-        const s = Number(value) / 255;
+        const s = Number(value) / scale;
         return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
       });
     return 0.2126 * red + 0.7152 * green + 0.0722 * blue;

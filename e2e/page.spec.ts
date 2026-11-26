@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
+import { contrast } from "./contrast";
 
 test("shows the name, intro and contact links", async ({ page }) => {
   await page.goto("/");
@@ -61,4 +62,33 @@ test("has no content wider than a 320px screen", async ({ page }) => {
       .map((el) => el.outerHTML.slice(0, 80)),
   );
   expect(overflowing).toEqual([]);
+});
+
+test("tints each footer link on hover, keeping text contrast", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const links = page
+    .getByRole("navigation", { name: "Footer" })
+    .getByRole("link");
+  const paper = await page.evaluate(
+    () => getComputedStyle(document.body).backgroundColor,
+  );
+  const colour = (link: Locator) =>
+    link.evaluate(async (a) => {
+      await Promise.all(a.getAnimations().map(({ finished }) => finished));
+      return getComputedStyle(a).color;
+    });
+
+  const hovered = [];
+  for (const link of await links.all()) {
+    const before = await colour(link);
+    await link.hover();
+    const after = await colour(link);
+    expect(after).not.toBe(before);
+    expect(contrast(after, paper)).toBeGreaterThanOrEqual(4.5);
+    hovered.push(after);
+  }
+  // Each link takes its own colour, as the hero's buttons do.
+  expect(new Set(hovered).size).toBe(3);
 });
