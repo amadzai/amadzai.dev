@@ -1,14 +1,16 @@
 import { expect, test } from "@playwright/test";
 import { contrast } from "./contrast";
 
-test("lists each Work role newest first", async ({ page }) => {
+test("lists each Work role newest first, with a one-line summary", async ({
+  page,
+}) => {
   await page.goto("/");
   const rows = page.getByRole("region", { name: "work" }).getByRole("listitem");
 
   await expect(rows).toHaveText([
-    /Sunway Property\s+Software Engineer\s+Jun 2026 – Dec 2026/,
-    /ELVTD\s+Full Stack Developer\s+Sep 2024 – Mar 2026/,
-    /PETRONAS\s+Data Engineer\s+Apr 2024 – Sep 2024/,
+    /Sunway Property\s+Software Engineer\s+Led agentic AI development from LangGraph agents to durable workflows\.\s+Jun 2026 – Dec 2026/,
+    /ELVTD\s+Full Stack Developer\s+Shipped a decentralized prediction market live across multiple EVM chains\.\s+Sep 2024 – Mar 2026/,
+    /PETRONAS\s+Data Engineer\s+Built lakehouse pipelines and an ELT tool for analytics and digital twins\.\s+Apr 2024 – Sep 2024/,
   ]);
 });
 

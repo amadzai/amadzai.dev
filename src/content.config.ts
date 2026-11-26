@@ -18,6 +18,8 @@ const work = defineCollection({
       .object({
         company: z.string().trim().min(1),
         role: z.string().trim().min(1),
+        // One line on what the role was about, shown between the role and the dates.
+        summary: z.string().trim().min(1),
         url: https,
         // Hover colour for the company name, from the logo; keep it at 3:1 or more on paper.
         brand: z.string().regex(/^#[0-9a-f]{6}$/i, "Use a #rrggbb colour"),
