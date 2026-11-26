@@ -24,7 +24,7 @@
     "order": 3,
     "name": "bytesize",
     "description": "A self-hosted URL shortener with fast redirects and visit analytics by location.",
-    "stack": ["Ruby", "Rails", "React"],
+    "stack": ["Ruby", "Rails", "TypeScript", "React"],
     "site": "https://app.bytesize.now/",
     "source": "https://github.com/amadzai/bytesize",
     "corner": "red",
