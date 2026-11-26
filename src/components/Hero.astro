@@ -10,12 +10,27 @@ const hoverColour: Record<(typeof contactLinks)[number]["label"], string> = {
 const [first, last] = site.name.split(" ");
 ---
 
+<script is:inline>
+  if (document.hidden) {
+    const root = document.documentElement;
+    root.classList.add("hero-wait");
+    document.addEventListener(
+      "visibilitychange",
+      () => root.classList.remove("hero-wait"),
+      { once: true },
+    );
+  }
+</script>
+
 <section
-  aria-labelledby="name"
+  aria-labelledby="hero-name"
   class="mt-8 grid grid-cols-[auto_1fr] items-center gap-8 phone:grid-cols-1"
 >
   <div>
-    <h1 class="text-[clamp(84px,12vw,150px)] leading-[.85] font-extrabold tracking-[-0.03em] lowercase">
+    <h1
+      id="hero-name"
+      class="text-[clamp(84px,12vw,150px)] leading-[.85] font-extrabold tracking-[-0.03em] lowercase"
+    >
       <span class="name">{first}</span>
       <span class="name text-red">{last}</span>
     </h1>
@@ -26,6 +41,7 @@ const [first, last] = site.name.split(" ");
       {contactLinks.map(({ label, href }) => (
         <a
           href={href}
+          target="_blank"
           class:list={[
             "rounded-full border-3 border-ink px-4 py-1.5 font-medium shadow-[-5px_5px_0_var(--color-ink)] transition-[translate,box-shadow,background-color,color] duration-200 ease-[ease] hover:-translate-x-[3px] hover:translate-y-[3px] hover:shadow-[-2px_2px_0_var(--color-ink)]",
             hoverColour[label],
@@ -36,6 +52,28 @@ const [first, last] = site.name.split(" ");
       ))}
     </nav>
   </div>
+  <svg
+    class="w-full justify-self-end overflow-visible phone:justify-self-start"
+    viewBox="0 0 1466 1024"
+    aria-hidden="true"
+  >
+    <circle class="pop fill-blue" cx="221" cy="170" r="150" />
+    <g class="ray fill-ink">
+      <polygon points="1340,242 0,774 0,863" />
+      <polygon points="1340,242 175,1024 320,1024" />
+      <polygon points="1340,242 582,1024 674,1024" />
+    </g>
+    <polygon class="pop fill-yellow" points="1466,340 1466,1024 810,1024" />
+    <path
+      class="pop fill-red"
+      d="M1466,1024 L1346,1024 A120,120 0 0 1 1466,904 Z"
+    />
+    <rect class="pop fill-yellow" x="854" y="277" width="156" height="160" />
+    <rect class="pop fill-blue" x="728" y="293" width="194" height="223" />
+    <rect class="pop fill-red" x="480" y="335" width="291" height="313" />
+    <rect class="pop fill-ink" x="146" y="408" width="423" height="437" />
+    <circle class="sun fill-red" cx="1365" cy="217" r="25" />
+  </svg>
 </section>
 
 <style>
@@ -54,6 +92,81 @@ const [first, last] = site.name.split(" ");
 
   .links {
     animation: in-l 0.94s 0.34s both;
+  }
+
+  /* Rays grow out of the shared apex by the sun, one after another. */
+  .ray polygon {
+    transform-box: view-box;
+    transform-origin: 1340px 242px;
+    animation: scale-in 0.94s 0.38s cubic-bezier(0.5, 0, 0.2, 1) both;
+  }
+
+  .pop,
+  .sun {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .pop {
+    animation: scale-in 0.85s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  }
+
+  .ray polygon:nth-child(2) {
+    animation-delay: 0.48s;
+  }
+
+  .ray polygon:nth-child(3) {
+    animation-delay: 0.59s;
+  }
+
+  /* Shapes pop in from the back of the stack forwards. */
+  circle.pop {
+    animation-delay: 0.09s;
+  }
+
+  rect.pop:nth-of-type(1) {
+    animation-delay: 0.42s;
+  }
+
+  polygon.pop,
+  rect.pop:nth-of-type(2) {
+    animation-delay: 0.51s;
+  }
+
+  rect.pop:nth-of-type(3) {
+    animation-delay: 0.59s;
+  }
+
+  rect.pop:nth-of-type(4) {
+    animation-delay: 0.68s;
+  }
+
+  path.pop {
+    animation-delay: 0.77s;
+  }
+
+  /* Sun pops in first, then the rays shoot out of it; the pulse takes over once everything has landed. */
+  .sun {
+    animation:
+      scale-in 0.64s cubic-bezier(0.3, 1.3, 0.5, 1) both,
+      pulse 4s 3s ease-in-out infinite;
+  }
+
+  /* Set by the inline script only while the tab is hidden, so the entrance plays when the visitor sees it. */
+  :global(.hero-wait) section * {
+    animation-play-state: paused;
+  }
+
+  @keyframes scale-in {
+    from {
+      scale: 0;
+    }
+  }
+
+  @keyframes pulse {
+    50% {
+      scale: 1.25;
+    }
   }
 
   @keyframes in-l {

@@ -27,6 +27,15 @@ test("shows the name, intro and contact links", async ({ page }) => {
   }
 });
 
+test("opens every link in a new tab", async ({ page }) => {
+  await page.goto("/");
+  const targets = await page
+    .getByRole("link")
+    .evaluateAll((links) => links.map((a) => a.getAttribute("target")));
+  expect(targets.length).toBeGreaterThan(0);
+  expect(new Set(targets)).toEqual(new Set(["_blank"]));
+});
+
 test("has no content wider than a 320px screen", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("/");

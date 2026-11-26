@@ -11,7 +11,7 @@ import { buildYear, contactLinks, site } from "../data/site";
   </span>
   <nav class="flex gap-4" aria-label="Footer">
     {contactLinks.map(({ label, href }) => (
-      <a href={href} class="underline">
+      <a href={href} target="_blank" class="underline">
         {label}
       </a>
     ))}
