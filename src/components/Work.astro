@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import SectionHeading from "./SectionHeading.astro";
 
@@ -18,19 +19,27 @@ const formatMonth = (date: Date) =>
 const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
 ---
 
-<section aria-labelledby="work" class="mt-[72px]">
+<section aria-labelledby="work" class="mt-18">
   <SectionHeading id="work" marker="circle">
     work
   </SectionHeading>
   <ol>
     {roles.map(({ data }, i) => (
-      <li class="grid grid-cols-[56px_1fr_auto] items-center gap-5 border-b border-ink/20 py-[18px] phone:grid-cols-[44px_1fr]">
+      <li class="grid grid-cols-[56px_1fr_auto] items-center gap-5 border-b border-ink/20 py-4.5 phone:grid-cols-[44px_1fr]">
         <div
           class:list={[
-            "logo size-14 border-3 border-ink bg-mute phone:size-11",
+            "size-14 overflow-hidden border-3 border-ink bg-mute p-1.5 phone:size-11",
             tileShapes[i % tileShapes.length],
           ]}
-        />
+        >
+          {/* 96px covers the 38px logo box at 2x density. */}
+          <Image
+            src={data.logo}
+            alt=""
+            width={96}
+            class="size-full object-contain"
+          />
+        </div>
         <div>
           <b class="block text-[26px] leading-[1.1] font-extrabold">
             {data.company}
@@ -45,24 +54,3 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
     ))}
   </ol>
 </section>
-
-<style>
-  /* Long cast shadow down and to the left, one pixel per step. */
-  .logo {
-    box-shadow:
-      -1px 1px 0 var(--color-cast),
-      -2px 2px 0 var(--color-cast),
-      -3px 3px 0 var(--color-cast),
-      -4px 4px 0 var(--color-cast),
-      -5px 5px 0 var(--color-cast),
-      -6px 6px 0 var(--color-cast),
-      -7px 7px 0 var(--color-cast),
-      -8px 8px 0 var(--color-cast),
-      -9px 9px 0 var(--color-cast),
-      -10px 10px 0 var(--color-cast),
-      -11px 11px 0 var(--color-cast),
-      -12px 12px 0 var(--color-cast),
-      -13px 13px 0 var(--color-cast),
-      -14px 14px 0 var(--color-cast);
-  }
-</style>

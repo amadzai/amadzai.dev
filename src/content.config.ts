@@ -10,14 +10,16 @@ const month = z
 
 const work = defineCollection({
   loader: file("src/data/work.json"),
-  schema: z
-    .object({
-      company: z.string().trim().min(1),
-      role: z.string().trim().min(1),
-      start: month,
-      end: month,
-    })
-    .refine(({ start, end }) => end >= start, "end is before start"),
+  schema: ({ image }) =>
+    z
+      .object({
+        company: z.string().trim().min(1),
+        role: z.string().trim().min(1),
+        start: month,
+        end: month,
+        logo: image(),
+      })
+      .refine(({ start, end }) => end >= start, "end is before start"),
 });
 
 export const collections = { work };

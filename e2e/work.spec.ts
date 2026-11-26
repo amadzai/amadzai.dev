@@ -10,3 +10,19 @@ test("lists each Work role newest first", async ({ page }) => {
     /PETRONAS\s+Data Engineer\s+Apr 2024 – Sep 2024/,
   ]);
 });
+
+test("shows a decorative logo in each Work row", async ({ page }) => {
+  await page.goto("/");
+  const rows = page.getByRole("region", { name: "work" }).getByRole("listitem");
+  await expect(rows).toHaveCount(3);
+
+  for (const row of await rows.all()) {
+    // Logos are decorative: the company name already labels the row, so screen readers skip them.
+    await expect(row.getByRole("img")).toHaveCount(0);
+    const logo = row.locator("img");
+    await expect(logo).toHaveCount(1);
+    await expect
+      .poll(() => logo.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+  }
+});
