@@ -27,3 +27,7 @@ docs/private
 .vscode/settings.json
 # Playwright MCP screenshots and snapshots
 .playwright-mcp/
+
+# Agent skills: local issues and config
+.scratch/
+docs/agents/
