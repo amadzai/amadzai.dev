@@ -2,6 +2,7 @@ export const site = {
   name: "Amad Zai",
   domain: "amadzai.dev",
   intro: "Full stack developer and AI engineer from Kuala Lumpur",
+  githubUser: "amadzai",
   links: {
     email: "mailto:amadzainurin@gmail.com",
     github: "https://github.com/amadzai",

@@ -1,0 +1,88 @@
+---
+import { getCollection } from "astro:content";
+import { GITHUB_TOKEN } from "astro:env/server";
+import SectionHeading from "./SectionHeading.astro";
+import { githubActivity, type MarkerColour } from "../lib/github";
+import { site } from "../data/site";
+
+// Only this build-time fetch carries the token.
+const withToken: typeof fetch = (input, init) => {
+  const headers = new Headers(init?.headers);
+  headers.set("Authorization", `Bearer ${GITHUB_TOKEN}`);
+  return fetch(input, { ...init, headers });
+};
+
+const projects = await getCollection("projects");
+const { recentCommits } = await githubActivity(
+  site.githubUser,
+  withToken,
+  Object.fromEntries(projects.map(({ id, data }) => [id, data.corner])),
+);
+
+// Each colour keeps its Bauhaus shape, as in the footer signature.
+const MARKER: Record<MarkerColour, string> = {
+  red: "rounded-full bg-red",
+  blue: "bg-blue",
+  yellow: "tri bg-yellow",
+  ink: "bg-ink",
+};
+
+// Hover text takes the marker's colour; yellow reads too faintly on paper, so it takes ochre.
+const TINT: Record<MarkerColour, string> = {
+  red: "group-hover:text-red group-focus-visible:text-red",
+  blue: "group-hover:text-blue group-focus-visible:text-blue",
+  yellow: "group-hover:text-ochre group-focus-visible:text-ochre",
+  ink: "",
+};
+---
+
+<section aria-labelledby="recent-commits" class="mt-22 phone:mt-16">
+  <SectionHeading id="recent-commits" marker="triangle">
+    recent commits
+  </SectionHeading>
+  {/* One shared grid, so every row's headline starts in the same column. */}
+  <ol class="mt-4 grid grid-cols-[20px_minmax(130px,auto)_1fr_auto] phone:grid-cols-[20px_1fr_auto]">
+    {recentCommits.map(
+      ({ repo, headline, additions, deletions, url, colour }) => (
+        <li class="col-span-full grid grid-cols-subgrid">
+          <a
+            href={url}
+            target="_blank"
+            class="group col-span-full grid grid-cols-subgrid items-center gap-x-3 gap-y-0.5 border-b border-ink/20 py-2.5 text-[17px]"
+          >
+            <span
+              class:list={["size-3.5", MARKER[colour]]}
+              aria-hidden="true"
+            />
+            <b
+              class:list={[
+                "font-medium transition-colors duration-200 phone:col-span-2",
+                TINT[colour],
+              ]}
+            >
+              {repo}
+            </b>
+            <span
+              class:list={[
+                "truncate transition-colors duration-200 phone:col-start-2",
+                TINT[colour],
+              ]}
+            >
+              {headline}
+            </span>
+            <span class="text-right font-medium whitespace-nowrap tabular-nums">
+              <span class="text-blue">+{additions}</span> /{" "}
+              <span class="text-red">−{deletions}</span>
+            </span>
+          </a>
+        </li>
+      ),
+    )}
+  </ol>
+</section>
+
+<style>
+  .tri {
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+</style>

@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, fontProviders } from "astro/config";
+import { defineConfig, envField, fontProviders } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -19,5 +19,11 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+  },
+  env: {
+    schema: {
+      // Read-only, public-repo token for Recent commits. Build time only: a secret never reaches the client.
+      GITHUB_TOKEN: envField.string({ context: "server", access: "secret" }),
+    },
   },
 });

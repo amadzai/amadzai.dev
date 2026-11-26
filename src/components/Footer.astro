@@ -1,11 +1,10 @@
 ---
 import { buildYear, contactLinks, site } from "../data/site";
 
-// Each link's hero button colour. Yellow text is too faint on paper, so GitHub darkens it halfway to ink.
+// Each link's hero button colour. Yellow text is too faint on paper, so GitHub takes ochre.
 const hoverColour: Record<(typeof contactLinks)[number]["label"], string> = {
   Email: "hover:text-red focus-visible:text-red",
-  GitHub:
-    "hover:text-[color-mix(in_srgb,var(--color-yellow),var(--color-ink))] focus-visible:text-[color-mix(in_srgb,var(--color-yellow),var(--color-ink))]",
+  GitHub: "hover:text-ochre focus-visible:text-ochre",
   LinkedIn: "hover:text-blue focus-visible:text-blue",
 };
 ---
