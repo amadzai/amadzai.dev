@@ -15,6 +15,7 @@ const work = defineCollection({
       .object({
         company: z.string().trim().min(1),
         role: z.string().trim().min(1),
+        url: z.url({ protocol: /^https$/ }),
         start: month,
         end: month,
         logo: image(),

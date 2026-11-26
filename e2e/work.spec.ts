@@ -26,3 +26,18 @@ test("shows a decorative logo in each Work row", async ({ page }) => {
       .toBeGreaterThan(0);
   }
 });
+
+test("links each Work row to the company's website", async ({ page }) => {
+  await page.goto("/");
+  const work = page.getByRole("region", { name: "work" });
+
+  for (const [company, href] of [
+    ["Sunway Property", "https://sunwayproperty.com/"],
+    ["ELVTD.io", "https://www.elvtd.io/"],
+    ["PETRONAS", "https://www.petronas.com/"],
+  ]) {
+    await expect(
+      work.getByRole("link", { name: company, exact: true }),
+    ).toHaveAttribute("href", href);
+  }
+});

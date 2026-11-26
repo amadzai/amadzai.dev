@@ -46,7 +46,8 @@ const { id, marker } = Astro.props;
     transition: rotate 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
   }
 
-  .heading:hover .marker {
+  /* Hovering anywhere in the section turns the marker. */
+  :global(section:hover) .marker {
     rotate: 90deg;
   }
 
