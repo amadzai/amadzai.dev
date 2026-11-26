@@ -14,14 +14,7 @@
     "order": 2,
     "name": "gambit",
     "description": "AI launchpad that tokenizes chess agents, making market cap their ELO.",
-    "stack": [
-      "TypeScript",
-      "NestJS",
-      "Next.js",
-      "Solidity",
-      "Foundry",
-      "Postgres"
-    ],
+    "stack": ["TypeScript", "NestJS", "Next.js", "Solidity", "Foundry"],
     "source": "https://github.com/amadzai/gambit",
     "corner": "blue",
     "cover": "../assets/covers/gambit.jpg"
