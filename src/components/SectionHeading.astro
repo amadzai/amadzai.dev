@@ -43,12 +43,21 @@ const { id, marker } = Astro.props;
     height: 28px;
     flex: none;
     filter: drop-shadow(-6px 6px 0 var(--color-ink));
-    transition: rotate 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+    transition-property: rotate, translate, filter;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1);
   }
 
   /* Hovering anywhere in the section turns the marker. */
   :global(section:hover) .marker {
     rotate: 90deg;
+  }
+
+  /* A turning circle looks still, so the circle lifts instead; the longer offset keeps its shadow in place. */
+  :global(section:hover) .circle {
+    rotate: none;
+    translate: 0 -4px;
+    filter: drop-shadow(-6px 10px 0 var(--color-ink));
   }
 
   .circle {
