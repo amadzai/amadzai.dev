@@ -6,7 +6,7 @@ test("lists each Work role newest first", async ({ page }) => {
 
   await expect(rows).toHaveText([
     /Sunway Property\s+Software Engineer\s+Jun 2026 – Dec 2026/,
-    /ELVTD\.io\s+Full Stack Developer\s+Sep 2024 – Mar 2026/,
+    /ELVTD\s+Full Stack Developer\s+Sep 2024 – Mar 2026/,
     /PETRONAS\s+Data Engineer\s+Apr 2024 – Sep 2024/,
   ]);
 });
@@ -33,7 +33,7 @@ test("links each Work row to the company's website", async ({ page }) => {
 
   for (const [company, href] of [
     ["Sunway Property", "https://sunwayproperty.com/"],
-    ["ELVTD.io", "https://www.elvtd.io/"],
+    ["ELVTD", "https://www.elvtd.io/"],
     ["PETRONAS", "https://www.petronas.com/"],
   ]) {
     await expect(

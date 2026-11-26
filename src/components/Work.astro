@@ -22,7 +22,7 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
   </SectionHeading>
   <ol>
     {roles.map(({ data }) => (
-      <li class="group relative grid grid-cols-[56px_1fr_auto] items-center gap-5 border-b border-ink/20 py-4.5 phone:grid-cols-[44px_1fr]">
+      <li class="relative grid grid-cols-[56px_1fr_auto] items-center gap-5 border-b border-ink/20 py-4.5 phone:grid-cols-[44px_1fr]">
         <div class="size-14 phone:size-11">
           {/* 112px covers the 56px logo box at 2x density. */}
           <Image
@@ -38,7 +38,7 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
             <a
               href={data.url}
               target="_blank"
-              class="decoration-3 underline-offset-4 group-hover:underline after:absolute after:inset-0"
+              class="after:absolute after:inset-0"
             >
               {data.company}
             </a>
