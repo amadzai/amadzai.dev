@@ -1,0 +1,70 @@
+---
+interface Props {
+  id: string;
+  marker: "circle" | "square" | "triangle";
+}
+
+const { id, marker } = Astro.props;
+---
+
+<div class="heading relative flex items-center gap-4 pb-[18px]">
+  <span class:list={["marker", marker]}></span>
+  <h2 {id} class="text-[clamp(32px,5vw,48px)] font-extrabold lowercase">
+    <slot />
+  </h2>
+</div>
+
+<style>
+  /* The rule tapers to a vanishing point with a low sun, like the hero. */
+  .heading::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 16px;
+    bottom: 2px;
+    height: 8px;
+    background: var(--color-ink);
+    clip-path: polygon(0 0, 100% 3.5px, 100% 4.5px, 0 100%);
+  }
+
+  .heading::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-red);
+  }
+
+  .marker {
+    width: 28px;
+    height: 28px;
+    flex: none;
+    filter: drop-shadow(-6px 6px 0 var(--color-ink));
+    transition: rotate 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+  }
+
+  .heading:hover .marker {
+    rotate: 90deg;
+  }
+
+  .circle {
+    border-radius: 50%;
+    background: var(--color-red);
+  }
+
+  .square {
+    background: var(--color-blue);
+  }
+
+  /* Clip a child, not the marker, so the drop shadow keeps the triangle shape. */
+  .triangle::before {
+    content: "";
+    display: block;
+    height: 100%;
+    background: var(--color-yellow);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+</style>

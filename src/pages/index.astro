@@ -1,11 +1,13 @@
 ---
 import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
+import Work from "../components/Work.astro";
 import { site } from "../data/site";
 ---
 
 <Base title={site.name} description={site.intro}>
   <main>
     <Hero />
+    <Work />
   </main>
 </Base>

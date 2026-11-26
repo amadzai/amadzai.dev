@@ -27,6 +27,11 @@
     overflow-x: clip;
   }
 
+  /* Reserve the scrollbar's space up front, so the page doesn't shift sideways when it appears. */
+  html {
+    scrollbar-gutter: stable;
+  }
+
   /* The design uses the browser's normal line height, not Tailwind's 1.5. */
   body {
     line-height: normal;
