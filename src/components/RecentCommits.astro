@@ -13,7 +13,7 @@ const withToken: typeof fetch = (input, init) => {
 };
 
 const projects = await getCollection("projects");
-const { recentCommits } = await githubActivity(
+const { recentCommits, languageBreakdown } = await githubActivity(
   site.githubUser,
   withToken,
   Object.fromEntries(projects.map(({ id, data }) => [id, data.corner])),
@@ -34,6 +34,14 @@ const TINT: Record<MarkerColour, string> = {
   yellow: "group-hover:text-ochre group-focus-visible:text-ochre",
   ink: "",
 };
+
+// Where each segment starts along the bar, so its tooltip opens towards the bar's middle and stays on screen.
+const segments = languageBreakdown.map((language, i) => ({
+  ...language,
+  start: languageBreakdown
+    .slice(0, i)
+    .reduce((total, { percent }) => total + percent, 0),
+}));
 ---
 
 <section aria-labelledby="recent-commits" class="mt-22 phone:mt-16">
@@ -79,6 +87,37 @@ const TINT: Record<MarkerColour, string> = {
       ),
     )}
   </ol>
+  <div class="mt-6 flex items-center gap-4">
+    {/* No legend: each segment names itself in a tooltip, and screen readers read that text as a list. */}
+    <ul
+      aria-label="Language breakdown"
+      class="flex h-6 flex-1 border-3 border-ink"
+    >
+      {segments.map(({ name, percent, colour, start }) => (
+        <li
+          tabindex="0"
+          class="group relative not-first:border-l-3 not-first:border-ink focus:z-10 focus:outline-3 focus:outline-offset-2 focus:outline-blue"
+          style={`flex: ${percent} 1 0; background-color: ${colour ?? "var(--color-mute)"}`}
+        >
+          <span
+            class:list={[
+              "pointer-events-none absolute bottom-full z-10 mb-2.5 bg-ink px-2 py-1 text-[15px] font-medium whitespace-nowrap text-paper opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100",
+              start + percent / 2 < 50 ? "-left-0.75" : "-right-0.75",
+            ]}
+          >
+            {name} {percent}%
+          </span>
+        </li>
+      ))}
+    </ul>
+    <a
+      href={site.links.github}
+      target="_blank"
+      class="text-[15px] whitespace-nowrap underline transition-colors duration-200 hover:text-ochre focus-visible:text-ochre"
+    >
+      View on GitHub
+    </a>
+  </div>
 </section>
 
 <style>

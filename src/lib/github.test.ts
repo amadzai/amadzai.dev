@@ -15,7 +15,20 @@ interface FakeRepo {
   isFork?: boolean;
   isPrivate?: boolean;
   empty?: boolean;
+  // Bytes of code per language, as GitHub counts them.
+  languages?: Record<string, number>;
 }
+
+// GitHub's colour for each language; any other language has none.
+const LANGUAGE_COLOURS: Record<string, string> = {
+  TypeScript: "#3178c6",
+  Python: "#3572A5",
+  Ruby: "#701516",
+  Solidity: "#AA6746",
+  Scala: "#c22d40",
+  // A colour that would break out of the style attribute it is rendered into.
+  Injected: "red;}",
+};
 
 // One canned GraphQL response, shaped like GitHub's, from a short list of repos.
 const github = (repos: FakeRepo[]) => ({
@@ -23,10 +36,26 @@ const github = (repos: FakeRepo[]) => ({
     user: {
       repositories: {
         nodes: repos.map(
-          ({ name, commits, isFork = false, isPrivate = false, empty }) => ({
+          ({
+            name,
+            commits,
+            isFork = false,
+            isPrivate = false,
+            empty,
+            languages = {},
+          }) => ({
             name,
             isFork,
             isPrivate,
+            languages: {
+              edges: Object.entries(languages).map(([language, size]) => ({
+                size,
+                node: {
+                  name: language,
+                  color: LANGUAGE_COLOURS[language] ?? null,
+                },
+              })),
+            },
             defaultBranchRef: empty
               ? null
               : {
@@ -241,6 +270,96 @@ describe("Recent commits", () => {
     ).toEqual(["yellow", "ink", "blue", "yellow", "red"]);
   });
 
+  test("sums language bytes across repos into the top five languages plus Other, as percentages of 100", async () => {
+    const fetch = reply(
+      github([
+        {
+          name: "gambit",
+          commits: [],
+          languages: { TypeScript: 500, Solidity: 60, CSS: 20 },
+        },
+        {
+          name: "bytesize",
+          commits: [],
+          languages: { Ruby: 110, TypeScript: 100, Shell: 10 },
+        },
+        { name: "think-fast-jev", commits: [], languages: { Python: 150 } },
+        { name: "dune", commits: [], languages: { Scala: 50 } },
+      ]),
+    );
+
+    const { languageBreakdown } = await githubActivity(
+      "amadzai",
+      fetch,
+      colours,
+    );
+
+    // Of 1000 bytes: TypeScript 600, Python 150, Ruby 110, Solidity 60, Scala 50, then CSS and Shell as Other.
+    expect(languageBreakdown).toEqual([
+      { name: "TypeScript", percent: 60, colour: "#3178c6" },
+      { name: "Python", percent: 15, colour: "#3572A5" },
+      { name: "Ruby", percent: 11, colour: "#701516" },
+      { name: "Solidity", percent: 6, colour: "#AA6746" },
+      { name: "Scala", percent: 5, colour: "#c22d40" },
+      { name: "Other", percent: 3, colour: null },
+    ]);
+  });
+
+  test("rounds the percentages so they still sum to 100, and drops a language too small to show", async () => {
+    const fetch = reply(
+      github([
+        {
+          name: "bytesize",
+          commits: [],
+          languages: { Ruby: 1000, Python: 1000, TypeScript: 1000, Scala: 1 },
+        },
+      ]),
+    );
+
+    const { languageBreakdown } = await githubActivity(
+      "amadzai",
+      fetch,
+      colours,
+    );
+
+    // Each third is 33.3%, so one takes the spare point; Scala's 0.03% would round to 0.
+    expect(languageBreakdown).toEqual([
+      { name: "Ruby", percent: 34, colour: "#701516" },
+      { name: "Python", percent: 33, colour: "#3572A5" },
+      { name: "TypeScript", percent: 33, colour: "#3178c6" },
+    ]);
+  });
+
+  test("leaves forks and private repos out of the Language breakdown", async () => {
+    const fetch = reply(
+      github([
+        {
+          name: "a-fork",
+          isFork: true,
+          commits: [],
+          languages: { Scala: 900 },
+        },
+        {
+          name: "secret",
+          isPrivate: true,
+          commits: [],
+          languages: { Ruby: 900 },
+        },
+        { name: "bytesize", commits: [], languages: { Python: 100 } },
+      ]),
+    );
+
+    const { languageBreakdown } = await githubActivity(
+      "amadzai",
+      fetch,
+      colours,
+    );
+
+    expect(languageBreakdown).toEqual([
+      { name: "Python", percent: 100, colour: "#3572A5" },
+    ]);
+  });
+
   // Each error fails the build, so the live site keeps its last good version.
   test.each([
     ["an HTTP error", reply({ message: "Bad credentials" }, 401), /401/],
@@ -250,6 +369,13 @@ describe("Recent commits", () => {
       /Something went wrong/,
     ],
     ["an unknown user", reply({ data: { user: null } }), /amadzai/],
+    [
+      "a language colour that isn't a hex code",
+      reply(
+        github([{ name: "bytesize", commits: [], languages: { Injected: 1 } }]),
+      ),
+      /unexpected/,
+    ],
     [
       "a response in an unexpected shape",
       reply({ data: { user: { repositories: { nodes: [{ name: 42 }] } } } }),

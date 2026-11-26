@@ -3,7 +3,10 @@ import { contrast } from "./contrast";
 
 // The rows come from live GitHub data at build time, so these check their shape, not their text.
 const rows = (page: Page) =>
-  page.getByRole("region", { name: "recent commits" }).getByRole("link");
+  page
+    .getByRole("region", { name: "recent commits" })
+    .getByRole("listitem")
+    .getByRole("link");
 
 test("lists five recent commits, each linking to GitHub with its diff counts", async ({
   page,
@@ -95,4 +98,33 @@ test("tints a commit's repo and headline in its marker colour on hover, keeping 
     if (marker !== ink) expect(headline).not.toBe(ink);
     expect(contrast(headline, paper)).toBeGreaterThanOrEqual(4.5);
   }
+});
+
+test("names each language and its share in a tooltip when its segment is focused", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const segments = page
+    .getByRole("list", { name: "Language breakdown" })
+    .getByRole("listitem");
+  await expect(segments.first()).toBeAttached();
+  const opacity = (segment: typeof segments) =>
+    segment.locator("span").evaluate(async (tooltip) => {
+      await Promise.all(
+        tooltip.getAnimations().map(({ finished }) => finished),
+      );
+      return getComputedStyle(tooltip).opacity;
+    });
+
+  const percents = [];
+  for (const segment of await segments.all()) {
+    expect(await opacity(segment)).toBe("0");
+    await segment.focus();
+    expect(await opacity(segment)).toBe("1");
+    const [, percent] = (await segment.textContent())!
+      .trim()
+      .match(/^.+ (\d+)%$/)!;
+    percents.push(Number(percent));
+  }
+  expect(percents.reduce((total, n) => total + n, 0)).toBe(100);
 });
