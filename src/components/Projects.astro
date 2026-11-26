@@ -17,9 +17,9 @@ const COVER_SIZES =
   <SectionHeading id="projects" marker="square">
     projects
   </SectionHeading>
-  <div class="mt-8 grid grid-cols-2 gap-x-10 gap-y-14 phone:grid-cols-1">
+  <div class="mt-8 grid grid-cols-2 gap-x-10 gap-y-12 phone:grid-cols-1 phone:gap-y-14">
     {projects.map(({ data }) => (
-      <article class="card" style={`--c: var(--color-${data.corner})`}>
+      <article class="card relative" style={`--c: var(--color-${data.corner})`}>
         <div class="cover relative aspect-3/2 overflow-hidden border-3 border-ink bg-mute">
           <Picture
             src={data.cover}
@@ -51,14 +51,22 @@ const COVER_SIZES =
             </>
           ))}
         </ul>
-        <div class="links mt-2.5 flex gap-4 font-medium">
+        {/* Makes the card above the links open the source. Hidden from keyboards and screen readers, which already get the GitHub link. */}
+        <a
+          href={data.source}
+          target="_blank"
+          aria-hidden="true"
+          tabindex="-1"
+          class="absolute inset-0"
+        ></a>
+        <div class="links relative mt-2.5 flex gap-4 font-medium">
           {data.site && (
             <a href={data.site} target="_blank">
               Live site
             </a>
           )}{" "}
           <a href={data.source} target="_blank">
-            Source
+            GitHub
           </a>
         </div>
       </article>
@@ -98,9 +106,16 @@ const COVER_SIZES =
     scale: calc(104 / 56);
   }
 
+  /* On hover the text takes the underline's colour. */
   .links a {
-    text-decoration: underline 3px
-      color-mix(in srgb, var(--c) 75%, var(--color-ink));
+    --line: color-mix(in srgb, var(--c) 75%, var(--color-ink));
+    text-decoration: underline 3px var(--line);
     text-underline-offset: 4px;
+    transition: color 0.2s;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    color: var(--line);
   }
 </style>
