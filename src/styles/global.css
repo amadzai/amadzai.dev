@@ -6,7 +6,8 @@
 /* Plain :hover, as in the design, so a tap on touch screens also shows the effect. */
 @custom-variant hover (&:hover);
 
-@theme {
+/* Static, so a colour named at runtime (a Project's corner) is always in the CSS. */
+@theme static {
   --color-paper: #ece3d1;
   --color-ink: #1b1916;
   --color-red: #a8432f;

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "think-fast-jev",
+    "order": 1,
+    "name": "think fast jev",
+    "description": "A benchmark of decision models against LLMs on crypto market questions.",
+    "stack": ["Python"],
+    "source": "https://github.com/amadzai/think-fast-jev",
+    "corner": "yellow",
+    "cover": "../assets/covers/think-fast-jev.jpg"
+  },
+  {
+    "id": "gambit",
+    "order": 2,
+    "name": "gambit",
+    "description": "AI launchpad that tokenizes chess skill.",
+    "stack": [
+      "TypeScript",
+      "NestJS",
+      "Next.js",
+      "Solidity",
+      "Foundry",
+      "Postgres"
+    ],
+    "source": "https://github.com/amadzai/gambit",
+    "corner": "blue",
+    "cover": "../assets/covers/gambit.jpg"
+  },
+  {
+    "id": "bytesize",
+    "order": 3,
+    "name": "bytesize",
+    "description": "A simple URL shortener with fast redirects.",
+    "stack": ["Ruby", "Rails", "React", "Postgres"],
+    "site": "https://app.bytesize.now/",
+    "source": "https://github.com/amadzai/bytesize",
+    "corner": "red",
+    "cover": "../assets/covers/bytesize.jpg"
+  },
+  {
+    "id": "syamad-wedding-invitation",
+    "order": 4,
+    "name": "wedding",
+    "description": "My wedding invitation website.",
+    "stack": ["TypeScript", "React"],
+    "site": "https://amadsya.love/",
+    "source": "https://github.com/amadzai/syamad-wedding-invitation",
+    "corner": "ink",
+    "cover": "../assets/covers/wedding.jpg"
+  }
+]

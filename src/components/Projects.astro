@@ -1,0 +1,106 @@
+---
+import { Picture } from "astro:assets";
+import { getCollection } from "astro:content";
+import SectionHeading from "./SectionHeading.astro";
+import { stackColours } from "../data/stack";
+
+const projects = (await getCollection("projects")).toSorted(
+  (a, b) => a.data.order - b.data.order,
+);
+
+// Drawn width of a Cover inside its 3px border: one column on phones, two columns up to the 1040px page width.
+const COVER_SIZES =
+  "(max-width: 720px) calc(100vw - 38px), (max-width: 1072px) calc(50vw - 42px), 494px";
+---
+
+<section aria-labelledby="projects" class="mt-26">
+  <SectionHeading id="projects" marker="square">
+    projects
+  </SectionHeading>
+  <div class="mt-8 grid grid-cols-2 gap-x-10 gap-y-14 phone:grid-cols-1">
+    {projects.map(({ data }) => (
+      <article class="card" style={`--c: var(--color-${data.corner})`}>
+        <div class="cover relative aspect-3/2 overflow-hidden border-3 border-ink bg-mute">
+          <Picture
+            src={data.cover}
+            alt=""
+            formats={["avif", "webp"]}
+            widths={[500, 750, 1000]}
+            sizes={COVER_SIZES}
+            class="block size-full object-cover"
+          />
+        </div>
+        <h3 class="mt-4.5 text-[28px] font-extrabold wrap-anywhere">
+          {data.name}
+        </h3>{" "}
+        <p class="mt-1 max-w-[40ch] text-[17px] leading-[1.4]">
+          {data.description}
+        </p>{" "}
+        <ul class="mt-2.5 flex flex-wrap gap-2">
+          {data.stack.map((name) => (
+            <>
+              <li
+                style={`background: ${stackColours[name].colour}`}
+                class:list={[
+                  "rounded-full px-3 py-1 text-[13px] font-medium",
+                  stackColours[name].text === "ink" ? "text-ink" : "text-white",
+                ]}
+              >
+                {name}
+              </li>{" "}
+            </>
+          ))}
+        </ul>
+        <div class="links mt-2.5 flex gap-4 font-medium">
+          {data.site && (
+            <a href={data.site} target="_blank">
+              Live site
+            </a>
+          )}{" "}
+          <a href={data.source} target="_blank">
+            Source
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  /* Covers sit a little faded, like dusk, and wake with a slow zoom on hover. */
+  .cover :global(img) {
+    filter: saturate(0.6) contrast(1.05) brightness(0.94);
+    transition:
+      scale 0.5s cubic-bezier(0.2, 0.9, 0.2, 1),
+      filter 0.5s;
+  }
+
+  .card:hover .cover :global(img) {
+    scale: 1.04;
+    filter: saturate(0.85) contrast(1.05);
+  }
+
+  /* A quarter circle in the card's colour fills the corner and grows on hover. Scaling from the corner keeps the shape. */
+  .cover::after {
+    content: "";
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    width: 56px;
+    height: 56px;
+    border-top-left-radius: 100%;
+    background: var(--c);
+    transform-origin: 100% 100%;
+    transition: scale 0.35s;
+  }
+
+  .card:hover .cover::after {
+    scale: calc(104 / 56);
+  }
+
+  .links a {
+    text-decoration: underline 3px
+      color-mix(in srgb, var(--c) 75%, var(--color-ink));
+    text-underline-offset: 4px;
+  }
+</style>

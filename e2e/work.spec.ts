@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { contrast } from "./contrast";
 
 test("lists each Work role newest first", async ({ page }) => {
   await page.goto("/");
@@ -56,21 +57,14 @@ test("tints each company name on hover, keeping large-text contrast", async ({
     await row.hover();
     await expect.poll(colour).not.toBe(ink);
 
-    // WCAG contrast of the settled hover colour against the page background; 3:1 is the large-text minimum.
-    const contrast = await name.evaluate(async (el) => {
+    // Contrast of the settled hover colour against the page background; 3:1 is the large-text minimum.
+    const [fg, bg] = await name.evaluate(async (el) => {
       await Promise.all(el.getAnimations().map((a) => a.finished));
-      const rgb = (s: string) => s.match(/\d+/g)!.slice(0, 3).map(Number);
-      const lum = (c: number[]) => {
-        const [r, g, b] = c.map((v) => {
-          const s = v / 255;
-          return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-        });
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      };
-      const fg = lum(rgb(getComputedStyle(el).color));
-      const bg = lum(rgb(getComputedStyle(document.body).backgroundColor));
-      return (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+      return [
+        getComputedStyle(el).color,
+        getComputedStyle(document.body).backgroundColor,
+      ];
     });
-    expect(contrast).toBeGreaterThanOrEqual(3);
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(3);
   }
 });
