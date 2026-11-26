@@ -31,3 +31,4 @@ docs/private
 # Agent skills: local issues and config
 .scratch/
 docs/agents/
+GLOSSARY.md
