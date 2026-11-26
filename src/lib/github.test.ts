@@ -197,47 +197,48 @@ describe("Recent commits", () => {
     expect(recentCommits.map(({ colour }) => colour)).toEqual(["red", "ink"]);
   });
 
-  test("gives every other repo red, blue or yellow, the same one whatever else is in the list", async () => {
-    const names = [
-      "amadzai.dev",
-      "pika-bot",
-      "querying-dex-data",
-      "swap-price-resolver",
-    ];
-    const colourOf = async (repos: FakeRepo[]) => {
-      const { recentCommits } = await githubActivity(
-        "amadzai",
-        reply(github(repos)),
-        colours,
-      );
-      return Object.fromEntries(
-        recentCommits.map(({ repo, colour }) => [repo, colour]),
-      );
-    };
-    const commit = (date: string) => [{ headline: "x", date }];
-
-    const forward = await colourOf(
-      names.map((name, i) => ({
-        name,
-        commits: commit(`2026-11-0${i + 1}T00:00:00Z`),
-      })),
+  // Rows newest first, each a commit in the named repo.
+  const coloursOf = async (rows: string[]) => {
+    const dated = rows.map((name, i) => ({
+      name,
+      date: `2026-11-${String(28 - i).padStart(2, "0")}T00:00:00Z`,
+    }));
+    const repos = [...new Set(rows)].map((name) => ({
+      name,
+      commits: dated
+        .filter((row) => row.name === name)
+        .map(({ date }) => ({ headline: name, date })),
+    }));
+    const { recentCommits } = await githubActivity(
+      "amadzai",
+      reply(github(repos)),
+      { "think-fast-jev": "yellow", gambit: "blue", bytesize: "red" },
     );
-    const reversed = await colourOf(
-      names.toReversed().map((name, i) => ({
-        name,
-        commits: commit(`2026-11-0${i + 1}T00:00:00Z`),
-      })),
-    );
-    const alone = await colourOf([
-      { name: "pika-bot", commits: commit("2026-11-01T00:00:00Z") },
-    ]);
+    return recentCommits.map(({ colour }) => colour);
+  };
 
-    for (const name of names)
-      expect(["red", "blue", "yellow"]).toContain(forward[name]);
-    expect(reversed).toEqual(forward);
-    expect(alone["pika-bot"]).toBe(forward["pika-bot"]);
-    // The rotation spreads repos over the colours rather than giving them all one.
-    expect(new Set(Object.values(forward)).size).toBeGreaterThan(1);
+  test("gives every repo in the list its own colour, the same in each of its rows", async () => {
+    expect(
+      await coloursOf([
+        "pika-bot",
+        "bytesize",
+        "amadzai.dev",
+        "pika-bot",
+        "dex-data",
+      ]),
+    ).toEqual(["blue", "red", "yellow", "blue", "ink"]);
+  });
+
+  test("when there are more repos than colours, keeps neighbouring rows apart", async () => {
+    expect(
+      await coloursOf([
+        "think-fast-jev",
+        "pika-bot",
+        "gambit",
+        "dex-data",
+        "bytesize",
+      ]),
+    ).toEqual(["yellow", "ink", "blue", "yellow", "red"]);
   });
 
   // Each error fails the build, so the live site keeps its last good version.

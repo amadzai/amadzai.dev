@@ -90,14 +90,39 @@ const RESPONSE = z.object({
     .optional(),
 });
 
-const ROTATION: readonly MarkerColour[] = ["red", "blue", "yellow"];
+// Ink comes last: it is the plainest marker and has no hover tint.
+const PALETTE: readonly MarkerColour[] = ["red", "blue", "yellow", "ink"];
 
-// A repo without a Project card takes a colour from its name, so it keeps the same one on every build.
-const rotationColour = (repo: string): MarkerColour =>
-  ROTATION[
-    [...repo].reduce((sum, char) => sum + char.charCodeAt(0), 0) %
-      ROTATION.length
-  ];
+// Gives every repo in the list its own colour. A Project keeps its card colour; any other repo takes the
+// first colour no other repo uses. With more repos than colours, it takes one its neighbouring rows don't use.
+function markerColours(
+  rows: readonly string[],
+  projectColours: Readonly<Record<string, MarkerColour>>,
+): ReadonlyMap<string, MarkerColour> {
+  const colours = new Map(
+    rows
+      .filter((repo) => Object.hasOwn(projectColours, repo))
+      .map((repo) => [repo, projectColours[repo]]),
+  );
+  for (const repo of new Set(rows)) {
+    if (colours.has(repo)) continue;
+    const taken = new Set(colours.values());
+    const besideIt = new Set(
+      rows.flatMap((row, i) =>
+        row === repo
+          ? [rows[i - 1], rows[i + 1]].map((next) => next && colours.get(next))
+          : [],
+      ),
+    );
+    colours.set(
+      repo,
+      PALETTE.find((colour) => !taken.has(colour)) ??
+        PALETTE.find((colour) => !besideIt.has(colour)) ??
+        PALETTE[0],
+    );
+  }
+  return colours;
+}
 
 /**
  * @param fetch Sends the request; the caller adds the token, so it never reaches this module or the page.
@@ -135,7 +160,7 @@ export async function githubActivity(
   }
   const repos = data.user.repositories.nodes;
 
-  const recentCommits = repos
+  const newest = repos
     // The query already asks for these, but the rule is ours to keep, not the API's.
     .filter(({ isFork, isPrivate }) => !isFork && !isPrivate)
     .flatMap((repo) =>
@@ -147,15 +172,20 @@ export async function githubActivity(
     .toSorted((a, b) =>
       b.commit.committedDate.localeCompare(a.commit.committedDate),
     )
-    .slice(0, RECENT_COMMITS)
-    .map(({ repo, commit }) => ({
-      repo: repo.name,
-      headline: commit.messageHeadline,
-      additions: commit.additions,
-      deletions: commit.deletions,
-      url: commit.url,
-      colour: projectColours[repo.name] ?? rotationColour(repo.name),
-    }));
+    .slice(0, RECENT_COMMITS);
+
+  const colours = markerColours(
+    newest.map(({ repo }) => repo.name),
+    projectColours,
+  );
+  const recentCommits = newest.map(({ repo, commit }) => ({
+    repo: repo.name,
+    headline: commit.messageHeadline,
+    additions: commit.additions,
+    deletions: commit.deletions,
+    url: commit.url,
+    colour: colours.get(repo.name)!,
+  }));
 
   return { recentCommits };
 }
