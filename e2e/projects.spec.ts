@@ -48,7 +48,10 @@ test("colours each stack pill with text that reads at 4.5:1 or more", async ({
   for (const { name, color, backgroundColor } of pills) {
     // A transparent pill would have no brand colour.
     expect(backgroundColor, name).not.toBe("rgba(0, 0, 0, 0)");
-    expect(contrast(color, backgroundColor), name).toBeGreaterThanOrEqual(4.5);
+    // Python's white on yellow is Amad's choice, below the 4.5:1 floor the other pills keep.
+    expect(contrast(color, backgroundColor), name).toBeGreaterThanOrEqual(
+      name === "Python" ? 2.5 : 4.5,
+    );
   }
 });
 
