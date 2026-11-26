@@ -43,7 +43,7 @@ const [first, last] = site.name.split(" ");
           href={href}
           target="_blank"
           class:list={[
-            "rounded-full border-3 border-ink px-4 py-1.5 font-medium",
+            "press rounded-full border-3 border-ink px-4 py-1.5 font-medium",
             hoverColour[label],
           ]}
         >
@@ -92,21 +92,6 @@ const [first, last] = site.name.split(" ");
 
   .links {
     animation: in-l 0.94s 0.34s both;
-  }
-
-  /* The button presses down into its hard ink shadow. */
-  .links a {
-    box-shadow: -5px 5px 0 var(--color-ink);
-    transition:
-      translate 0.2s,
-      box-shadow 0.2s,
-      background-color 0.2s,
-      color 0.2s;
-  }
-
-  .links a:hover {
-    translate: -3px 3px;
-    box-shadow: -2px 2px 0 var(--color-ink);
   }
 
   /* Rays grow out of the shared apex by the sun, one after another. */

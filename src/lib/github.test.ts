@@ -19,17 +19,6 @@ interface FakeRepo {
   languages?: Record<string, number>;
 }
 
-// GitHub's colour for each language; any other language has none.
-const LANGUAGE_COLOURS: Record<string, string> = {
-  TypeScript: "#3178c6",
-  Python: "#3572A5",
-  Ruby: "#701516",
-  Solidity: "#AA6746",
-  Scala: "#c22d40",
-  // A colour that would break out of the style attribute it is rendered into.
-  Injected: "red;}",
-};
-
 // One canned GraphQL response, shaped like GitHub's, from a short list of repos.
 const github = (repos: FakeRepo[]) => ({
   data: {
@@ -50,10 +39,7 @@ const github = (repos: FakeRepo[]) => ({
             languages: {
               edges: Object.entries(languages).map(([language, size]) => ({
                 size,
-                node: {
-                  name: language,
-                  color: LANGUAGE_COLOURS[language] ?? null,
-                },
+                node: { name: language },
               })),
             },
             defaultBranchRef: empty
@@ -270,7 +256,7 @@ describe("Recent commits", () => {
     ).toEqual(["yellow", "ink", "blue", "yellow", "red"]);
   });
 
-  test("sums language bytes across repos into the top five languages plus Other, as percentages of 100", async () => {
+  test("sums language bytes across repos into every language's share, to one decimal, biggest first", async () => {
     const fetch = reply(
       github([
         {
@@ -294,24 +280,25 @@ describe("Recent commits", () => {
       colours,
     );
 
-    // Of 1000 bytes: TypeScript 600, Python 150, Ruby 110, Solidity 60, Scala 50, then CSS and Shell as Other.
+    // Of 1000 bytes: TypeScript 600, Python 150, Ruby 110, Solidity 60, Scala 50, CSS 20, Shell 10.
     expect(languageBreakdown).toEqual([
-      { name: "TypeScript", percent: 60, colour: "#3178c6" },
-      { name: "Python", percent: 15, colour: "#3572A5" },
-      { name: "Ruby", percent: 11, colour: "#701516" },
-      { name: "Solidity", percent: 6, colour: "#AA6746" },
-      { name: "Scala", percent: 5, colour: "#c22d40" },
-      { name: "Other", percent: 3, colour: null },
+      { name: "TypeScript", percent: 60 },
+      { name: "Python", percent: 15 },
+      { name: "Ruby", percent: 11 },
+      { name: "Solidity", percent: 6 },
+      { name: "Scala", percent: 5 },
+      { name: "CSS", percent: 2 },
+      { name: "Shell", percent: 1 },
     ]);
   });
 
-  test("rounds the percentages so they still sum to 100, and drops a language too small to show", async () => {
+  test("rounds the shares so they still sum to 100, and drops a language too small to show", async () => {
     const fetch = reply(
       github([
         {
           name: "bytesize",
           commits: [],
-          languages: { Ruby: 1000, Python: 1000, TypeScript: 1000, Scala: 1 },
+          languages: { Ruby: 3000, Python: 3000, TypeScript: 3000, Scala: 1 },
         },
       ]),
     );
@@ -322,11 +309,11 @@ describe("Recent commits", () => {
       colours,
     );
 
-    // Each third is 33.3%, so one takes the spare point; Scala's 0.03% would round to 0.
+    // Each third is 33.33%, so one takes the spare tenth; Scala's 0.01% would round to 0.
     expect(languageBreakdown).toEqual([
-      { name: "Ruby", percent: 34, colour: "#701516" },
-      { name: "Python", percent: 33, colour: "#3572A5" },
-      { name: "TypeScript", percent: 33, colour: "#3178c6" },
+      { name: "Ruby", percent: 33.4 },
+      { name: "Python", percent: 33.3 },
+      { name: "TypeScript", percent: 33.3 },
     ]);
   });
 
@@ -355,9 +342,7 @@ describe("Recent commits", () => {
       colours,
     );
 
-    expect(languageBreakdown).toEqual([
-      { name: "Python", percent: 100, colour: "#3572A5" },
-    ]);
+    expect(languageBreakdown).toEqual([{ name: "Python", percent: 100 }]);
   });
 
   // Each error fails the build, so the live site keeps its last good version.
@@ -369,13 +354,6 @@ describe("Recent commits", () => {
       /Something went wrong/,
     ],
     ["an unknown user", reply({ data: { user: null } }), /amadzai/],
-    [
-      "a language colour that isn't a hex code",
-      reply(
-        github([{ name: "bytesize", commits: [], languages: { Injected: 1 } }]),
-      ),
-      /unexpected/,
-    ],
     [
       "a response in an unexpected shape",
       reply({ data: { user: { repositories: { nodes: [{ name: 42 }] } } } }),

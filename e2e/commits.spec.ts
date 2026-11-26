@@ -109,22 +109,24 @@ test("names each language and its share in a tooltip when its segment is focused
     .getByRole("listitem");
   await expect(segments.first()).toBeAttached();
   const opacity = (segment: typeof segments) =>
-    segment.locator("span").evaluate(async (tooltip) => {
-      await Promise.all(
-        tooltip.getAnimations().map(({ finished }) => finished),
-      );
-      return getComputedStyle(tooltip).opacity;
-    });
+    segment
+      .locator("span")
+      .first()
+      .evaluate(async (tooltip) => {
+        await Promise.all(
+          tooltip.getAnimations().map(({ finished }) => finished),
+        );
+        return getComputedStyle(tooltip).opacity;
+      });
 
-  const percents = [];
+  const tenths = [];
   for (const segment of await segments.all()) {
     expect(await opacity(segment)).toBe("0");
     await segment.focus();
     expect(await opacity(segment)).toBe("1");
-    const [, percent] = (await segment.textContent())!
-      .trim()
-      .match(/^.+ (\d+)%$/)!;
-    percents.push(Number(percent));
+    const text = (await segment.textContent())!.replace(/\s+/g, " ").trim();
+    const [, percent] = text.match(/^.+ (\d+\.\d)%$/)!;
+    tenths.push(Math.round(Number(percent) * 10));
   }
-  expect(percents.reduce((total, n) => total + n, 0)).toBe(100);
+  expect(tenths.reduce((total, n) => total + n, 0)).toBe(1000);
 });

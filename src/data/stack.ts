@@ -19,7 +19,8 @@ const pill = ({ hex, path }: SimpleIcon, text: "white" | "ink" = "white") => ({
 
 // Stack pill colours and icons, from Simple Icons.
 export const stackColours = {
-  Python: pill(siPython),
+  // The site's yellow rather than Python's blue, to match the Language breakdown.
+  Python: { ...pill(siPython, "ink"), colour: "var(--color-yellow)" },
   TypeScript: pill(siTypescript),
   NestJS: pill(siNestjs),
   "Next.js": pill(siNextdotjs),

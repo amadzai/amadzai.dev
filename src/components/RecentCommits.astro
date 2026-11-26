@@ -4,6 +4,7 @@ import { GITHUB_TOKEN } from "astro:env/server";
 import SectionHeading from "./SectionHeading.astro";
 import { githubActivity, type MarkerColour } from "../lib/github";
 import { site } from "../data/site";
+import { languageColours } from "../data/languages";
 
 // Only this build-time fetch carries the token.
 const withToken: typeof fetch = (input, init) => {
@@ -35,12 +36,16 @@ const TINT: Record<MarkerColour, string> = {
   ink: "",
 };
 
-// Where each segment starts along the bar, so its tooltip opens towards the bar's middle and stays on screen.
-const segments = languageBreakdown.map((language, i) => ({
-  ...language,
-  start: languageBreakdown
-    .slice(0, i)
-    .reduce((total, { percent }) => total + percent, 0),
+// Each segment's colour, and its midpoint along the bar, so its tooltip can centre on it.
+const segments = languageBreakdown.map(({ name, percent }, i) => ({
+  name,
+  percent,
+  colour: languageColours[name] ?? "var(--color-mute)",
+  middle:
+    languageBreakdown
+      .slice(0, i)
+      .reduce((total, language) => total + language.percent, 0) +
+    percent / 2,
 }));
 ---
 
@@ -87,25 +92,33 @@ const segments = languageBreakdown.map((language, i) => ({
       ),
     )}
   </ol>
-  <div class="mt-6 flex items-center gap-4">
+  <div class="mt-7 flex items-center gap-5">
     {/* No legend: each segment names itself in a tooltip, and screen readers read that text as a list. */}
     <ul
       aria-label="Language breakdown"
-      class="flex h-6 flex-1 border-3 border-ink"
+      class="relative flex h-7 flex-1 border-3 border-ink"
     >
-      {segments.map(({ name, percent, colour, start }) => (
+      {segments.map(({ name, percent, colour, middle }) => (
         <li
           tabindex="0"
-          class="group relative not-first:border-l-3 not-first:border-ink focus:z-10 focus:outline-3 focus:outline-offset-2 focus:outline-blue"
-          style={`flex: ${percent} 1 0; background-color: ${colour ?? "var(--color-mute)"}`}
+          class="group min-w-1.5 not-first:border-l-3 not-first:border-ink focus:z-10 focus:outline-3 focus:outline-offset-2 focus:outline-blue"
+          style={`flex: ${percent} 1 0; background-color: ${colour}`}
         >
+          {/* Centred on its segment, but kept inside the bar so it never runs off a narrow screen. */}
           <span
-            class:list={[
-              "pointer-events-none absolute bottom-full z-10 mb-2.5 bg-ink px-2 py-1 text-[15px] font-medium whitespace-nowrap text-paper opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100",
-              start + percent / 2 < 50 ? "-left-0.75" : "-right-0.75",
-            ]}
+            class="pointer-events-none absolute bottom-full z-10 mb-3.5 grid w-32 translate-y-1.5 border-3 border-ink bg-paper px-3 pt-2 pb-1.5 whitespace-nowrap opacity-0 shadow-[-5px_5px_0_var(--color-ink)] transition-[opacity,translate] duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus:translate-y-0 group-focus:opacity-100"
+            style={`left: clamp(0px, ${middle}% - 4rem, 100% - 8rem)`}
           >
-            {name} {percent}%
+            <span class="flex items-center gap-1.5 text-sm font-medium">
+              <span
+                class="size-2.5 border-2 border-ink"
+                style={`background-color: ${colour}`}
+              />
+              {name}
+            </span>{" "}
+            <span class="text-[28px] leading-none font-extrabold">
+              {percent.toFixed(1)}%
+            </span>
           </span>
         </li>
       ))}
@@ -113,7 +126,7 @@ const segments = languageBreakdown.map((language, i) => ({
     <a
       href={site.links.github}
       target="_blank"
-      class="text-[15px] whitespace-nowrap underline transition-colors duration-200 hover:text-ochre focus-visible:text-ochre"
+      class="press rounded-full border-3 border-ink px-4 py-1.5 font-medium whitespace-nowrap hover:bg-yellow"
     >
       View on GitHub
     </a>

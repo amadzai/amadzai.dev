@@ -16,10 +16,8 @@ export interface Commit {
 
 export interface Language {
   name: string;
-  // Whole percent; a breakdown's percents sum to 100.
+  // Percent to one decimal; a breakdown's percents sum to 100.
   percent: number;
-  // GitHub's colour for the language, as a hex code; null for Other or a language GitHub gives none.
-  colour: string | null;
 }
 
 export interface GithubActivity {
@@ -32,7 +30,8 @@ const RECENT_COMMITS = 5;
 // The Language breakdown reads the same repos, so it covers all of Amad's public repos only while he has 20 or fewer.
 const REPOS_READ = 20;
 const COMMITS_READ_PER_REPO = 20;
-const TOP_LANGUAGES = 5;
+// Shares are counted in tenths of a percent, so they show to one decimal.
+const TENTHS = 1000;
 // GitHub's most per page; no repo has more languages than this.
 const LANGUAGES_READ_PER_REPO = 100;
 
@@ -44,7 +43,7 @@ const QUERY = `query ($login: String!) {
         name
         isFork
         isPrivate
-        languages(first: ${LANGUAGES_READ_PER_REPO}) { edges { size node { name color } } }
+        languages(first: ${LANGUAGES_READ_PER_REPO}) { edges { size node { name } } }
         defaultBranchRef {
           target {
             ... on Commit {
@@ -64,14 +63,7 @@ const LANGUAGES = z.object({
   edges: z.array(
     z.object({
       size: z.number().int().nonnegative(),
-      node: z.object({
-        name: z.string(),
-        // Rendered into a style attribute, so only a plain hex colour gets through.
-        color: z
-          .string()
-          .regex(/^#[0-9a-f]{6}$/i)
-          .nullable(),
-      }),
+      node: z.object({ name: z.string() }),
     }),
   ),
 });
@@ -159,7 +151,7 @@ function markerColours(
 const sum = (numbers: readonly number[]) =>
   numbers.reduce((total, n) => total + n, 0);
 
-// Sums each language's bytes across the repos, keeps the biggest few, and groups the rest as Other.
+// Sums each language's bytes across the repos into its share of the whole, biggest first.
 function languageBreakdown(
   repos: readonly { languages: z.infer<typeof LANGUAGES> }[],
 ): Language[] {
@@ -167,42 +159,27 @@ function languageBreakdown(
   const byLanguage = [...Map.groupBy(edges, ({ node }) => node.name)]
     .map(([name, group]) => ({
       name,
-      colour: group[0].node.color,
       bytes: sum(group.map(({ size }) => size)),
     }))
     .toSorted((a, b) => b.bytes - a.bytes);
-  const rest = byLanguage.slice(TOP_LANGUAGES);
-  const slices = [
-    ...byLanguage.slice(0, TOP_LANGUAGES),
-    ...(rest.length
-      ? [
-          {
-            name: "Other",
-            colour: null,
-            bytes: sum(rest.map(({ bytes }) => bytes)),
-          },
-        ]
-      : []),
-  ];
-  const total = sum(slices.map(({ bytes }) => bytes));
+  const total = sum(byLanguage.map(({ bytes }) => bytes));
   if (total === 0) return [];
 
-  // Largest remainder: round each share down, then give the points left over to the biggest remainders.
-  const exact = slices.map(({ bytes }) => (bytes * 100) / total);
+  // Largest remainder: round each share down, then give the tenths left over to the biggest remainders.
+  const exact = byLanguage.map(({ bytes }) => (bytes * TENTHS) / total);
   const floors = exact.map(Math.floor);
   const roundedUp = new Set(
     exact
       .map((share, i) => ({ i, remainder: share - floors[i] }))
       .toSorted((a, b) => b.remainder - a.remainder)
-      .slice(0, 100 - sum(floors))
+      .slice(0, TENTHS - sum(floors))
       .map(({ i }) => i),
   );
   return (
-    slices
-      .map(({ name, colour }, i) => ({
+    byLanguage
+      .map(({ name }, i) => ({
         name,
-        percent: floors[i] + (roundedUp.has(i) ? 1 : 0),
-        colour,
+        percent: (floors[i] + (roundedUp.has(i) ? 1 : 0)) / 10,
       }))
       // A sliver that rounds to 0% would be an invisible segment.
       .filter(({ percent }) => percent > 0)
