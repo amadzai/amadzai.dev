@@ -130,3 +130,34 @@ test("names each language and its share in a tooltip when its segment is focused
   }
   expect(tenths.reduce((total, n) => total + n, 0)).toBe(1000);
 });
+
+test("shows one language tooltip at a time, with no focus ring after a click", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const segments = page
+    .getByRole("list", { name: "Language breakdown" })
+    .getByRole("listitem");
+  const shown = () =>
+    segments.evaluateAll(async (all) => {
+      const cards = all.map((segment) => segment.querySelector("span")!);
+      await Promise.all(
+        cards.flatMap((card) =>
+          card.getAnimations().map(({ finished }) => finished),
+        ),
+      );
+      return cards.flatMap((card, i) =>
+        getComputedStyle(card).opacity === "1" ? [i] : [],
+      );
+    });
+
+  await segments.nth(0).click();
+  expect(await shown()).toEqual([0]);
+  expect(
+    await segments.nth(0).evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).toBe("none");
+
+  // Pointing at another segment closes the clicked one's tooltip.
+  await segments.nth(1).hover();
+  expect(await shown()).toEqual([1]);
+});
