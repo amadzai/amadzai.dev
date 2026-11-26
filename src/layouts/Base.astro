@@ -1,0 +1,67 @@
+---
+import { Font } from "astro:assets";
+import "../styles/global.css";
+import Footer from "../components/Footer.astro";
+import { buildYear, site } from "../data/site";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <Font cssVariable="--font-jost" preload />
+  </head>
+  <body class="bg-paper px-4 pt-6 pb-12 text-ink">
+    <div class="dusk" aria-hidden="true"></div>
+    <div class="mx-auto max-w-[1040px]">
+      <header class="flex justify-between text-[14px] font-medium">
+        <span>{site.domain}</span>
+        <span>{buildYear}</span>
+      </header>
+      <slot />
+      <Footer />
+    </div>
+  </body>
+</html>
+
+<style>
+  /* Edges darken as the visitor scrolls, where scroll-driven animation is supported. */
+  .dusk {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 70% 20%, #0000 40%, #2a1c1240 100%);
+    opacity: 0.5;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .dusk {
+      animation: dusk linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+
+  @keyframes dusk {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dusk {
+      opacity: 0.7;
+    }
+  }
+</style>
