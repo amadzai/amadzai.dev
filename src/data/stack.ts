@@ -29,7 +29,8 @@ export const stackColours = {
   // The site red, a little redder.
   Ruby: { ...pill(siRuby), colour: "#a5372f" },
   Rails: pill(siRubyonrails),
-  React: pill(siReact, "ink"),
+  // A dusky teal rather than React's pale cyan, so it can take white text like the others (about 4.6:1).
+  React: { ...pill(siReact), colour: "#2f7f94" },
 } as const;
 
 export type StackName = keyof typeof stackColours;
