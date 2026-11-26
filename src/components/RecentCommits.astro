@@ -2,7 +2,11 @@
 import { getCollection } from "astro:content";
 import { GITHUB_TOKEN } from "astro:env/server";
 import SectionHeading from "./SectionHeading.astro";
-import { githubActivity, type MarkerColour } from "../lib/github";
+import {
+  githubActivity,
+  type GithubActivity,
+  type MarkerColour,
+} from "../lib/github";
 import { site } from "../data/site";
 import { languageColours } from "../data/languages";
 
@@ -14,11 +18,25 @@ const withToken: typeof fetch = (input, init) => {
 };
 
 const projects = await getCollection("projects");
-const { recentCommits, languageBreakdown } = await githubActivity(
-  site.githubUser,
-  withToken,
-  Object.fromEntries(projects.map(({ id, data }) => [id, data.corner])),
-);
+const load = () =>
+  githubActivity(
+    site.githubUser,
+    withToken,
+    Object.fromEntries(projects.map(({ id, data }) => [id, data.corner])),
+  );
+
+// shortcut: in dev, the first fetch is reused until the server restarts, so reloads don't wait on GitHub;
+// a new commit or Project colour shows after a restart. A build always fetches.
+const devCache = globalThis as typeof globalThis & {
+  githubActivity?: Promise<GithubActivity>;
+};
+const { recentCommits, languageBreakdown } = await (import.meta.env.DEV
+  ? (devCache.githubActivity ??= load().catch((error: unknown) => {
+      // A failed fetch isn't kept, so the next reload tries again.
+      devCache.githubActivity = undefined;
+      throw error;
+    }))
+  : load());
 
 // Each colour keeps its Bauhaus shape, as in the footer signature.
 const MARKER: Record<MarkerColour, string> = {
@@ -92,7 +110,7 @@ const segments = languageBreakdown.map(({ name, percent }, i) => ({
       ),
     )}
   </ol>
-  <div class="mt-7 flex items-center gap-5">
+  <div class="mt-7 flex items-center gap-5 phone:gap-4">
     {/* No legend: each segment names itself in a tooltip, and screen readers read that text as a list. */}
     <ul
       aria-label="Language breakdown"
@@ -126,7 +144,7 @@ const segments = languageBreakdown.map(({ name, percent }, i) => ({
     <a
       href={site.links.github}
       target="_blank"
-      class="press rounded-full border-3 border-ink px-4 py-1.5 font-medium whitespace-nowrap hover:bg-yellow hover:text-white"
+      class="press rounded-full border-3 border-ink px-4 py-1.5 font-medium whitespace-nowrap phone:px-2.5 phone:py-1 phone:text-sm hover:bg-yellow hover:text-white"
     >
       View on GitHub
     </a>
