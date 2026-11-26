@@ -17,6 +17,20 @@ test("shows each Project card in order with its description and stack", async ({
   ]);
 });
 
+test("shows each stack's icon before its name, hidden from screen readers", async ({
+  page,
+}) => {
+  await page.goto("/");
+  for (const pill of await cards(page).getByRole("listitem").all()) {
+    const icon = pill.locator(":scope > svg:first-child");
+    await expect(icon).toHaveAttribute("aria-hidden", "true");
+    // The icon takes the pill's text colour, so it reads as well as the name.
+    expect(await icon.evaluate((svg) => getComputedStyle(svg).fill)).toBe(
+      await pill.evaluate((li) => getComputedStyle(li).color),
+    );
+  }
+});
+
 test("colours each stack pill with text that reads at 4.5:1 or more", async ({
   page,
 }) => {

@@ -42,10 +42,17 @@ const COVER_SIZES =
               <li
                 style={`background: ${stackColours[name].colour}`}
                 class:list={[
-                  "rounded-full px-3 py-1 text-[13px] font-medium",
+                  "flex items-center gap-1.5 rounded-full py-1 pr-3 pl-2.5 text-[13px] font-medium",
                   stackColours[name].text === "ink" ? "text-ink" : "text-white",
                 ]}
               >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  class="size-3.5 fill-current"
+                >
+                  <path d={stackColours[name].icon} />
+                </svg>
                 {name}
               </li>{" "}
             </>
