@@ -11,9 +11,9 @@ test("shows each Project card in order with its description and stack", async ({
 
   await expect(cards(page)).toHaveText([
     /think fast jev\s+A benchmark of decision models against LLMs on crypto market questions\.\s+Python/,
-    /gambit\s+AI launchpad that tokenizes chess skill\.\s+TypeScript\s+NestJS\s+Next\.js\s+Solidity\s+Foundry\s+Postgres/,
-    /bytesize\s+A simple URL shortener with fast redirects\.\s+Ruby\s+Rails\s+React\s+Postgres/,
-    /wedding\s+My wedding invitation website\.\s+TypeScript\s+React/,
+    /gambit\s+AI launchpad that tokenizes chess agents, making market cap their ELO\.\s+TypeScript\s+NestJS\s+Next\.js\s+Solidity\s+Foundry\s+Postgres/,
+    /bytesize\s+A self-hosted URL shortener with fast redirects and visit analytics by location\.\s+Ruby\s+Rails\s+React\s+Postgres/,
+    /wedding\s+My wedding invitation website, with flowing animations and floral designs\.\s+TypeScript\s+React/,
   ]);
 });
 
