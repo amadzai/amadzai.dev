@@ -111,20 +111,19 @@ const segments = languageBreakdown.map(({ name, percent }, i) => ({
     )}
   </ol>
   <div class="mt-7 flex items-center gap-5 phone:gap-4">
-    {/* No legend: each segment names itself in a tooltip, and screen readers read that text as a list. */}
+    {/* No legend: each segment names itself in a tooltip on hover (a tap on phones), and screen readers read that text as a list. */}
     <ul
       aria-label="Language breakdown"
-      class="bar relative flex h-7 flex-1 border-3 border-ink"
+      class="relative flex h-7 flex-1 border-3 border-ink"
     >
       {segments.map(({ name, percent, colour, middle }) => (
         <li
-          tabindex="0"
-          class="group min-w-1.5 not-first:border-l-3 not-first:border-ink focus:z-10 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-blue"
+          class="group min-w-1.5 not-first:border-l-3 not-first:border-ink"
           style={`flex: ${percent} 1 0; background-color: ${colour}`}
         >
           {/* Centred on its segment, but kept inside the bar so it never runs off a narrow screen. */}
           <span
-            class="card pointer-events-none absolute bottom-full z-10 mb-3.5 grid w-32 translate-y-1.5 border-3 border-ink bg-paper px-3 pt-2 pb-1.5 whitespace-nowrap opacity-0 shadow-[-5px_5px_0_var(--color-ink)] transition-[opacity,translate] duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus:translate-y-0 group-focus:opacity-100"
+            class="card pointer-events-none absolute bottom-full z-10 mb-3.5 grid w-32 translate-y-1.5 border-3 border-ink bg-paper px-3 pt-2 pb-1.5 whitespace-nowrap opacity-0 shadow-[-5px_5px_0_var(--color-ink)] transition-[opacity,translate] duration-150 group-hover:translate-y-0 group-hover:opacity-100"
             style={`left: clamp(0px, ${middle}% - 4rem, 100% - 8rem)`}
           >
             <span class="flex items-center gap-1.5 text-sm font-medium">
@@ -152,12 +151,6 @@ const segments = languageBreakdown.map(({ name, percent }, i) => ({
 </section>
 
 <style>
-  /* One tooltip at a time: pointing at another segment closes the clicked one's. */
-  .bar:has(li:hover) li:not(:hover) .card {
-    opacity: 0;
-    translate: 0 0.375rem;
-  }
-
   .tri {
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
   }

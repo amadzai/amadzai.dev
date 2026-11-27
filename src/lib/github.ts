@@ -48,7 +48,7 @@ const QUERY = `query ($login: String!) {
           target {
             ... on Commit {
               history(first: ${COMMITS_READ_PER_REPO}) {
-                nodes { messageHeadline committedDate additions deletions url author { user { login } } }
+                nodes { message committedDate additions deletions url author { user { login } } }
               }
             }
           }
@@ -89,7 +89,7 @@ const RESPONSE = z.object({
                       history: z.object({
                         nodes: z.array(
                           z.object({
-                            messageHeadline: z.string(),
+                            message: z.string(),
                             committedDate: z.iso.datetime(),
                             additions: z.number().int().nonnegative(),
                             deletions: z.number().int().nonnegative(),
@@ -242,7 +242,8 @@ export async function githubActivity(
   );
   const recentCommits = newest.map(({ repo, commit }) => ({
     repo: repo.name,
-    headline: commit.messageHeadline,
+    // GitHub's own messageHeadline is cut short near 70 characters, so take the message's first line whole.
+    headline: commit.message.split(/\r?\n/, 1)[0],
     additions: commit.additions,
     deletions: commit.deletions,
     url: commit.url,

@@ -100,30 +100,35 @@ test("tints a commit's repo and headline in its marker colour on hover, keeping 
   }
 });
 
-test("names each language and its share in a tooltip when its segment is focused", async ({
+const segmentsOf = (page: Page) =>
+  page.getByRole("list", { name: "Language breakdown" }).getByRole("listitem");
+
+// Which segments' tooltips show, once their fades finish.
+const shown = (page: Page) =>
+  segmentsOf(page).evaluateAll(async (all) => {
+    const cards = all.map((segment) => segment.querySelector("span")!);
+    await Promise.all(
+      cards.flatMap((card) =>
+        card.getAnimations().map(({ finished }) => finished),
+      ),
+    );
+    return cards.flatMap((card, i) =>
+      getComputedStyle(card).opacity === "1" ? [i] : [],
+    );
+  });
+
+test("names each language and its share in a tooltip on hover, one at a time", async ({
   page,
 }) => {
   await page.goto("/");
-  const segments = page
-    .getByRole("list", { name: "Language breakdown" })
-    .getByRole("listitem");
+  const segments = segmentsOf(page);
   await expect(segments.first()).toBeAttached();
-  const opacity = (segment: typeof segments) =>
-    segment
-      .locator("span")
-      .first()
-      .evaluate(async (tooltip) => {
-        await Promise.all(
-          tooltip.getAnimations().map(({ finished }) => finished),
-        );
-        return getComputedStyle(tooltip).opacity;
-      });
+  expect(await shown(page)).toEqual([]);
 
   const tenths = [];
-  for (const segment of await segments.all()) {
-    expect(await opacity(segment)).toBe("0");
-    await segment.focus();
-    expect(await opacity(segment)).toBe("1");
+  for (const [i, segment] of (await segments.all()).entries()) {
+    await segment.hover();
+    expect(await shown(page)).toEqual([i]);
     const text = (await segment.textContent())!.replace(/\s+/g, " ").trim();
     const [, percent] = text.match(/^.+ (\d+\.\d)%$/)!;
     tenths.push(Math.round(Number(percent) * 10));
@@ -131,33 +136,19 @@ test("names each language and its share in a tooltip when its segment is focused
   expect(tenths.reduce((total, n) => total + n, 0)).toBe(1000);
 });
 
-test("shows one language tooltip at a time, with no focus ring after a click", async ({
-  page,
-}) => {
+test("keeps the language segments out of the Tab order", async ({ page }) => {
   await page.goto("/");
-  const segments = page
-    .getByRole("list", { name: "Language breakdown" })
-    .getByRole("listitem");
-  const shown = () =>
-    segments.evaluateAll(async (all) => {
-      const cards = all.map((segment) => segment.querySelector("span")!);
-      await Promise.all(
-        cards.flatMap((card) =>
-          card.getAnimations().map(({ finished }) => finished),
-        ),
-      );
-      return cards.flatMap((card, i) =>
-        getComputedStyle(card).opacity === "1" ? [i] : [],
-      );
-    });
+  for (const segment of await segmentsOf(page).all()) {
+    await expect(segment).not.toHaveAttribute("tabindex");
+  }
+});
 
-  await segments.nth(0).click();
-  expect(await shown()).toEqual([0]);
-  expect(
-    await segments.nth(0).evaluate((el) => getComputedStyle(el).outlineStyle),
-  ).toBe("none");
+test.describe("on a phone", () => {
+  test.use({ hasTouch: true, viewport: { width: 375, height: 800 } });
 
-  // Pointing at another segment closes the clicked one's tooltip.
-  await segments.nth(1).hover();
-  expect(await shown()).toEqual([1]);
+  test("shows a language's tooltip on tap", async ({ page }) => {
+    await page.goto("/");
+    await segmentsOf(page).first().tap();
+    expect(await shown(page)).toEqual([0]);
+  });
 });

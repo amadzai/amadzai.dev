@@ -8,7 +8,7 @@ test("shows the name, intro and contact links", async ({ page }) => {
     page.getByRole("main").getByRole("heading", { level: 1 }),
   ).toHaveText(/amad\s*zai/i);
   await expect(
-    page.getByText("Full stack developer and AI engineer from Kuala Lumpur"),
+    page.getByText("AI engineer and full stack developer from Kuala Lumpur"),
   ).toBeVisible();
 
   for (const nav of ["Contact", "Footer"]) {

@@ -3,6 +3,8 @@ import { githubActivity } from "./github";
 
 interface FakeCommit {
   headline: string;
+  // The lines after the headline, if any.
+  body?: string;
   date: string;
   author?: string | null;
   additions?: number;
@@ -50,12 +52,13 @@ const github = (repos: FakeRepo[]) => ({
                       nodes: commits.map(
                         ({
                           headline,
+                          body,
                           date,
                           author = "amadzai",
                           additions = 1,
                           deletions = 0,
                         }) => ({
-                          messageHeadline: headline,
+                          message: body ? `${headline}\n\n${body}` : headline,
                           committedDate: date,
                           additions,
                           deletions,
@@ -135,6 +138,29 @@ describe("Recent commits", () => {
       additions: 12,
       deletions: 4,
     });
+  });
+
+  test("keeps a long headline whole, without the lines after it", async () => {
+    const long =
+      "style: give the TypeScript and Ruby pills the Language breakdown's colours";
+    const fetch = reply(
+      github([
+        {
+          name: "amadzai.dev",
+          commits: [
+            {
+              headline: long,
+              body: "Why it changed.",
+              date: "2026-11-25T00:00:00Z",
+            },
+          ],
+        },
+      ]),
+    );
+
+    const { recentCommits } = await githubActivity("amadzai", fetch, colours);
+
+    expect(recentCommits[0].headline).toBe(long);
   });
 
   test("skips forks and private repos", async () => {
