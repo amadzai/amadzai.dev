@@ -102,3 +102,30 @@ test("a click on the dialog's own padding leaves it open", async ({ page }) => {
   await page.mouse.click(box.x + 8, box.y + box.height - 8);
   await expect(dialog(page)).toBeVisible();
 });
+
+test.describe("after Copied resets", () => {
+  test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+  test("the copy tile goes back to its resting colours, even with the cursor still on it", async ({
+    page,
+  }) => {
+    await page.clock.install();
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await contact(page).click();
+    const copy = dialog(page).getByRole("button", { name: /Copy email/ });
+    const colours = () =>
+      copy.evaluate((tile) => [
+        getComputedStyle(tile).backgroundColor,
+        getComputedStyle(tile).color,
+        getComputedStyle(tile.querySelector(".shape")!).backgroundColor,
+      ]);
+    const resting = await colours();
+
+    await copy.click();
+    await expect(copy).toContainText("Copied");
+    await page.clock.runFor(3000);
+    await expect(copy).toContainText("To your clipboard");
+    expect(await colours()).toEqual(resting);
+  });
+});
