@@ -92,3 +92,32 @@ test("tints each footer link on hover, keeping text contrast", async ({
   // Each link takes its own colour, as the hero's buttons do.
   expect(new Set(hovered).size).toBe(3);
 });
+
+test("a pill button stays pressed with the cursor on its top or right edge", async ({
+  page,
+}) => {
+  // Skip the hero entrance, so the pill is already where it rests.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const pill = page
+    .getByRole("navigation", { name: "Contact" })
+    .getByRole("link", { name: "GitHub" });
+  const box = (await pill.boundingBox())!;
+
+  for (const [x, y] of [
+    [box.x + box.width / 2, box.y + 1],
+    [box.x + box.width - 1, box.y + box.height / 2],
+  ]) {
+    await page.mouse.move(x, y);
+    // Long enough for a stutter to show: hover lost, the 0.2s spring back, hover again.
+    await page.waitForTimeout(600);
+    const [hovered, translate] = await pill.evaluate((a) => [
+      a.matches(":hover"),
+      getComputedStyle(a).translate,
+    ]);
+    expect(hovered).toBe(true);
+    expect(translate).toBe("-3px 3px");
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(300);
+  }
+});

@@ -21,6 +21,7 @@
 
 /* A button that presses down into its hard ink shadow. */
 @utility press {
+  position: relative;
   box-shadow: -5px 5px 0 var(--color-ink);
   transition:
     translate 0.2s,
@@ -31,6 +32,14 @@
   &:hover {
     translate: -3px 3px;
     box-shadow: -2px 2px 0 var(--color-ink);
+  }
+
+  /* While pressed, still cover the strip the button moved off (3px, past its 3px border), so a cursor on the
+     top or right edge doesn't lose hover, spring the button back, and stutter. */
+  &:hover::before {
+    content: "";
+    position: absolute;
+    inset: -6px -6px -3px -3px;
   }
 }
 

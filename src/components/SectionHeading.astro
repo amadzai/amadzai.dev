@@ -12,19 +12,26 @@ const { id, marker } = Astro.props;
   <h2 {id} class="text-[clamp(32px,5vw,48px)] font-extrabold lowercase">
     <slot />
   </h2>
+  {/* The rule tapers to a vanishing point with a low sun, like the hero. SVG, not clip-path, so its long edges stay smooth when zoomed out. */}
+  <svg
+    class="rule"
+    viewBox="0 0 100 8"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <polygon points="0,0 100,3.25 100,4.75 0,8" />
+  </svg>
 </div>
 
 <style>
-  /* The rule tapers to a vanishing point with a low sun, like the hero. */
-  .heading::after {
-    content: "";
+  /* Stretched across the width, 8px tall, so the polygon's y units are pixels: the thin end is 1.5px. */
+  .rule {
     position: absolute;
     left: 0;
-    right: 16px;
     bottom: 2px;
+    width: calc(100% - 16px);
     height: 8px;
-    background: var(--color-ink);
-    clip-path: polygon(0 0, 100% 3.5px, 100% 4.5px, 0 100%);
+    fill: var(--color-ink);
   }
 
   .heading::before {

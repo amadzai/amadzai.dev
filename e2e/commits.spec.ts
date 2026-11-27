@@ -136,11 +136,31 @@ test("names each language and its share in a tooltip on hover, one at a time", a
   expect(tenths.reduce((total, n) => total + n, 0)).toBe(1000);
 });
 
-test("keeps the language segments out of the Tab order", async ({ page }) => {
+test("Tab moves through the language segments, showing each one's tooltip alone", async ({
+  page,
+}) => {
   await page.goto("/");
-  for (const segment of await segmentsOf(page).all()) {
-    await expect(segment).not.toHaveAttribute("tabindex");
+  // Start from the last commit row, so the next Tab lands on the first segment.
+  await rows(page).last().focus();
+  const count = await segmentsOf(page).count();
+  for (let i = 0; i < count; i++) {
+    await page.keyboard.press("Tab");
+    await expect(segmentsOf(page).nth(i)).toBeFocused();
+    expect(await shown(page)).toEqual([i]);
   }
+});
+
+test("a click leaves no tooltip or focus ring behind once the pointer moves off", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const first = segmentsOf(page).first();
+  await first.click();
+  expect(await first.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe(
+    "none",
+  );
+  await page.mouse.move(0, 0);
+  expect(await shown(page)).toEqual([]);
 });
 
 test.describe("on a phone", () => {
