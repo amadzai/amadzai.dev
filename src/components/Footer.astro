@@ -1,39 +1,43 @@
 ---
+import Mark from "../assets/mark.svg";
 import { buildYear, contactLinks, site } from "../data/site";
 
 // Each link's hero button colour. Yellow text is too faint on paper, so GitHub takes ochre.
 const hoverColour: Record<(typeof contactLinks)[number]["label"], string> = {
-  Email: "hover:text-red focus-visible:text-red",
   GitHub: "hover:text-ochre focus-visible:text-ochre",
   LinkedIn: "hover:text-blue focus-visible:text-blue",
 };
+
+const link = "cursor-pointer underline transition-colors duration-200";
+const [first, last] = site.name.split(" ");
 ---
 
 <footer class="mt-22 phone:mt-16 flex flex-wrap justify-between gap-4 border-t-3 border-ink pt-5 text-[15px]">
-  <span class="flex items-center gap-1.5">
-    <span class="size-3.5 rounded-full bg-red" aria-hidden="true"></span>
-    <span class="size-3.5 bg-blue" aria-hidden="true"></span>
-    <span class="tri size-3.5 bg-yellow" aria-hidden="true"></span>
-    &nbsp;{site.name}, {buildYear}
+  {/* The year sits as close to the name as the mark does: .35em of the logo's 20px. */}
+  <span class="flex items-baseline gap-1.75">
+    {/* The logo with the name: the mark stands on the baseline, as tall as the d. */}
+    <span class="flex items-baseline gap-[.35em] text-[20px] leading-none font-extrabold tracking-[-0.03em] lowercase">
+      <Mark aria-hidden="true" class="size-[.72em] flex-none" />
+      <span>
+        {first} <span class="text-blue">{last}</span>
+      </span>
+    </span>
+    {buildYear}
   </span>
   <nav class="flex gap-4" aria-label="Footer">
+    {/* Opens the same Contact dialog as the hero's button. */}
+    <button
+      type="button"
+      data-opens="contact"
+      aria-haspopup="dialog"
+      class:list={[link, "hover:text-red focus-visible:text-red"]}
+    >
+      Contact
+    </button>
     {contactLinks.map(({ label, href }) => (
-      <a
-        href={href}
-        target="_blank"
-        class:list={[
-          "underline transition-colors duration-200",
-          hoverColour[label],
-        ]}
-      >
+      <a href={href} target="_blank" class:list={[link, hoverColour[label]]}>
         {label}
       </a>
     ))}
   </nav>
 </footer>
-
-<style>
-  .tri {
-    clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  }
-</style>

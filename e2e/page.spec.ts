@@ -11,20 +11,10 @@ test("shows the name, intro and contact links", async ({ page }) => {
     page.getByText("AI engineer and full stack developer from Kuala Lumpur"),
   ).toBeVisible();
 
-  // The hero's Contact opens a dialog; the footer links the email straight.
-  await expect(
-    page
-      .getByRole("navigation", { name: "Contact" })
-      .getByRole("button", { name: "Contact" }),
-  ).toBeVisible();
-  await expect(
-    page
-      .getByRole("navigation", { name: "Footer" })
-      .getByRole("link", { name: "Email" }),
-  ).toHaveAttribute("href", /^mailto:/);
-
+  // The hero and the footer each have a Contact button for the dialog, then the profile links.
   for (const nav of ["Contact", "Footer"]) {
     const links = page.getByRole("navigation", { name: nav });
+    await expect(links.getByRole("button", { name: "Contact" })).toBeVisible();
     await expect(links.getByRole("link", { name: "GitHub" })).toHaveAttribute(
       "href",
       "https://github.com/amadzai",
@@ -36,11 +26,17 @@ test("shows the name, intro and contact links", async ({ page }) => {
   }
 });
 
-test("opens every link in a new tab", async ({ page }) => {
+test("opens every link in a new tab, except the logo's link home", async ({
+  page,
+}) => {
   await page.goto("/");
   const targets = await page
     .getByRole("link")
-    .evaluateAll((links) => links.map((a) => a.getAttribute("target")));
+    .evaluateAll((links) =>
+      links
+        .filter((a) => a.getAttribute("href") !== "/")
+        .map((a) => a.getAttribute("target")),
+    );
   expect(targets.length).toBeGreaterThan(0);
   expect(new Set(targets)).toEqual(new Set(["_blank"]));
 });
@@ -76,9 +72,10 @@ test("tints each footer link on hover, keeping text contrast", async ({
   page,
 }) => {
   await page.goto("/");
+  // Contact is a button, styled as a link like the others.
   const links = page
     .getByRole("navigation", { name: "Footer" })
-    .getByRole("link");
+    .locator("a, button");
   const paper = await page.evaluate(
     () => getComputedStyle(document.body).backgroundColor,
   );

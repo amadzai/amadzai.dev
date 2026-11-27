@@ -1,10 +1,7 @@
 ---
 import { contactLinks, site } from "../data/site";
 
-// Email (first in the list) lives in the Contact dialog, so the hero links to the other two.
-const [, ...links] = contactLinks;
-
-const hoverColour: Record<(typeof links)[number]["label"], string> = {
+const hoverColour: Record<(typeof contactLinks)[number]["label"], string> = {
   GitHub: "hover:bg-yellow hover:text-white",
   LinkedIn: "hover:bg-blue hover:text-white",
 };
@@ -50,7 +47,7 @@ const [first, last] = site.name.split(" ");
       >
         Contact
       </button>
-      {links.map(({ label, href }) => (
+      {contactLinks.map(({ label, href }) => (
         <a href={href} target="_blank" class:list={[pill, hoverColour[label]]}>
           {label}
         </a>

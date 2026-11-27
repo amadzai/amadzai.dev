@@ -129,3 +129,14 @@ test.describe("after Copied resets", () => {
     expect(await colours()).toEqual(resting);
   });
 });
+
+test("the footer's Contact opens the same dialog", async ({ page }) => {
+  await page.goto("/");
+  const footerContact = page
+    .getByRole("navigation", { name: "Footer" })
+    .getByRole("button", { name: "Contact" });
+  await footerContact.click();
+  await expect(dialog(page)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(footerContact).toBeFocused();
+});

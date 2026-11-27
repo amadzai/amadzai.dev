@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "test:e2e": "playwright test",
-    "test": "vitest run"
+    "test": "vitest run",
+    "brand-assets": "node scripts/brand-assets.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",

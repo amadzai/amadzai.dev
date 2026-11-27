@@ -89,9 +89,12 @@ const tile =
   const status = dialog.querySelector("[data-status]")!;
   let resetTimer: ReturnType<typeof setTimeout>;
 
+  // The hero and the footer each have a Contact button.
   document
-    .querySelector("[data-opens=contact]")!
-    .addEventListener("click", () => dialog.showModal());
+    .querySelectorAll("[data-opens=contact]")
+    .forEach((button) =>
+      button.addEventListener("click", () => dialog.showModal()),
+    );
   dialog
     .querySelector("[data-closes]")!
     .addEventListener("click", () => dialog.close());
