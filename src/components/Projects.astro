@@ -68,11 +68,11 @@ const COVER_SIZES =
         ></a>
         <div class="links relative mt-2.5 flex gap-4 font-medium">
           {data.site && (
-            <a href={data.site} target="_blank">
+            <a href={data.site} target="_blank" class="tap">
               Live site
             </a>
           )}{" "}
-          <a href={data.source} target="_blank">
+          <a href={data.source} target="_blank" class="tap">
             GitHub
           </a>
         </div>
@@ -82,7 +82,7 @@ const COVER_SIZES =
 </section>
 
 <style>
-  /* Covers sit a little faded, like dusk, and wake with a slow zoom on hover. */
+  /* Covers sit a little faded, like dusk, and wake with a slow zoom on hover, or when Tab reaches one of the card's links. */
   .cover :global(img) {
     filter: saturate(0.6) contrast(1.05) brightness(0.94);
     transition:
@@ -90,7 +90,7 @@ const COVER_SIZES =
       filter 0.5s;
   }
 
-  .card:hover .cover :global(img) {
+  .card:is(:hover, :has(:focus-visible)) .cover :global(img) {
     scale: 1.04;
     filter: saturate(0.85) contrast(1.05);
   }
@@ -109,7 +109,7 @@ const COVER_SIZES =
     transition: scale 0.35s;
   }
 
-  .card:hover .cover::after {
+  .card:is(:hover, :has(:focus-visible)) .cover::after {
     scale: calc(104 / 56);
   }
 

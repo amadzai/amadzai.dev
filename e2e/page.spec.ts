@@ -1,5 +1,6 @@
 import { expect, test, type Locator } from "@playwright/test";
 import { contrast } from "./contrast";
+import { finishEntrances } from "./entrances";
 
 test("shows the name, intro and contact links", async ({ page }) => {
   await page.goto("/");
@@ -44,15 +45,7 @@ test("opens every link in a new tab, except the logo's link home", async ({
 test("has no content wider than a 320px screen", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("/");
-  // Let entrance animations finish so their offsets don't count; looping ones never finish.
-  await page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((a) => a.effect?.getTiming().iterations !== Infinity)
-        .map((a) => a.finished),
-    ),
-  );
+  await finishEntrances(page);
 
   // The page clips horizontal overflow, so scrollWidth can't reveal it: check each element's box.
   const overflowing = await page.evaluate(() =>

@@ -173,3 +173,16 @@ test("links each Project to its source, and to its live site when it has one", a
     ["GitHub", "https://github.com/amadzai/syamad-wedding-invitation"],
   ]);
 });
+
+test("wakes a card's cover when one of its links has keyboard focus, as on hover", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const card = cards(page).first();
+  const cover = card.locator("img");
+  await expect(cover).toHaveCSS("scale", "none");
+
+  await card.getByRole("link", { name: "GitHub" }).focus();
+
+  await expect(cover).toHaveCSS("scale", "1.04");
+});
