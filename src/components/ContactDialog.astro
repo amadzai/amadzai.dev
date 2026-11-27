@@ -106,6 +106,13 @@ const tile =
     if (target === dialog && isOutside) dialog.close();
   });
 
+  const resetCopy = () => {
+    clearTimeout(resetTimer);
+    note.textContent = "To your clipboard";
+    status.textContent = "";
+    delete copyButton.dataset.copied;
+  };
+
   copyButton.addEventListener("pointerleave", () => {
     delete copyButton.dataset.rested;
   });
@@ -142,12 +149,16 @@ const tile =
     copyButton.dataset.copied = "";
     clearTimeout(resetTimer);
     resetTimer = setTimeout(() => {
-      note.textContent = "To your clipboard";
-      status.textContent = "";
-      delete copyButton.dataset.copied;
+      resetCopy();
       // Rest in the tile's own colours, though the cursor (or a sticky tap) still hovers it.
       copyButton.dataset.rested = "";
     }, COPIED_FOR_MS);
+  });
+
+  // Closing the dialog (any way) clears Copied, so it opens fresh next time.
+  dialog.addEventListener("close", () => {
+    resetCopy();
+    delete copyButton.dataset.rested;
   });
 </script>
 

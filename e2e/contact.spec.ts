@@ -140,3 +140,26 @@ test("the footer's Contact opens the same dialog", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(footerContact).toBeFocused();
 });
+
+test.describe("after closing the dialog", () => {
+  test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+  test("the copy tile is back to its start when the dialog opens again", async ({
+    page,
+  }) => {
+    // Hold the clock, so the tile's own 2.2s reset can't be what clears it.
+    await page.clock.install();
+    await page.goto("/");
+    await page.clock.pauseAt(Date.now() + 1000);
+    await contact(page).click();
+    const copy = dialog(page).getByRole("button", { name: /Copy email/ });
+    await copy.click();
+    await expect(copy).toContainText("Copied");
+
+    await page.keyboard.press("Escape");
+    await contact(page).click();
+    await expect(copy).toContainText("To your clipboard");
+    await expect(copy).not.toHaveAttribute("data-copied");
+    await expect(dialog(page).getByRole("status")).toHaveText("");
+  });
+});

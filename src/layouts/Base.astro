@@ -21,7 +21,12 @@ const person = {
   name: site.name,
   url: Astro.site?.href,
   description: site.intro,
-  sameAs: [site.links.github, site.links.linkedin],
+  sameAs: [
+    site.links.linkedin,
+    site.links.github,
+    site.links.huggingface,
+    site.links.instagram,
+  ],
 };
 ---
 

@@ -8,6 +8,8 @@ export const site = {
   links: {
     github: "https://github.com/amadzai",
     linkedin: "https://www.linkedin.com/in/muhammadzainurin/",
+    huggingface: "https://huggingface.co/amadzai",
+    instagram: "https://www.instagram.com/amadzai",
     // Opens straight to the 30-minute event.
     call: "https://cal.com/amadzai/30min?overlayCalendar=true",
   },

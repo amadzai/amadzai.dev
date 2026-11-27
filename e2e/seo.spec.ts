@@ -119,8 +119,10 @@ test("describes Amad as a Person for search engines", async ({ page }) => {
     name: "Amad Zai",
     url: "https://amadzai.dev/",
     sameAs: [
-      "https://github.com/amadzai",
       expect.stringMatching(/linkedin\.com\/in\//),
+      "https://github.com/amadzai",
+      "https://huggingface.co/amadzai",
+      "https://www.instagram.com/amadzai",
     ],
   });
 });
