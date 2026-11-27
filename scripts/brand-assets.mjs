@@ -67,27 +67,25 @@ try {
   });
   await page.evaluate((mark) => {
     const [first, last] = document.querySelectorAll("#hero-name .name");
-    const intro = document.querySelector("#hero-name ~ p");
     const art = document.querySelector("section svg");
-    if (!first || !last || !intro || !art) {
+    if (!first || !last || !art) {
       throw new Error(
-        "The hero's name, intro or art has moved; update the selectors.",
+        "The hero's name or art has moved; update the selectors.",
       );
     }
+    // No intro line: the preview card prints the description under the image.
     // Inline styles, so the share image adds no classes to the site's stylesheet.
     document.body.innerHTML = `
-      <div style="position:relative;height:630px;padding:64px 72px;box-sizing:border-box">
+      <div style="position:relative;height:630px;padding:72px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center">
         <div style="width:104px;height:104px">${mark}</div>
-        <h1 style="margin-top:28px;font-size:132px;line-height:.85;font-weight:800;letter-spacing:-.03em;text-transform:lowercase">
+        <h1 style="margin-top:28px;font-size:156px;line-height:.85;font-weight:800;letter-spacing:-.03em;text-transform:lowercase">
           <span style="display:block"></span><span style="display:block;color:var(--color-red)"></span>
         </h1>
-        <p style="margin-top:28px;max-width:24ch;font-size:30px;line-height:1.25"></p>
         <div style="position:absolute;right:64px;bottom:64px;width:600px">${art.outerHTML}</div>
       </div>`;
     const [a, b] = document.querySelectorAll("h1 span");
     a.textContent = first.textContent;
     b.textContent = last.textContent;
-    document.querySelector("p").textContent = intro.textContent;
     document.body.style.padding = "0";
   }, mark);
   await page.evaluate(() => document.fonts.ready);
