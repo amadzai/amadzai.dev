@@ -33,7 +33,7 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
             class="size-full object-contain"
           />
         </div>
-        <div>
+        <div class="pl-2.5 phone:pl-0">
           <b class="block text-[26px] leading-[1.1] font-extrabold">
             {/* The link stretches over the whole row, so the row is the click target. */}
             <a
@@ -47,7 +47,7 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
           </b>{" "}
           <small class="text-[16px]">{data.role}</small>
         </div>{" "}
-        <p class="pl-5 text-[15px] text-balance phone:col-start-2 phone:pl-0">
+        <p class="pl-9 text-[15px] text-balance phone:col-start-2 phone:pl-0">
           {data.summary}
         </p>{" "}
         <span class="text-[15px] font-medium tabular-nums phone:col-start-2">
