@@ -11,12 +11,20 @@ test("shows the name, intro and contact links", async ({ page }) => {
     page.getByText("AI engineer and full stack developer from Kuala Lumpur"),
   ).toBeVisible();
 
+  // The hero's Contact opens a dialog; the footer links the email straight.
+  await expect(
+    page
+      .getByRole("navigation", { name: "Contact" })
+      .getByRole("button", { name: "Contact" }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Footer" })
+      .getByRole("link", { name: "Email" }),
+  ).toHaveAttribute("href", /^mailto:/);
+
   for (const nav of ["Contact", "Footer"]) {
     const links = page.getByRole("navigation", { name: nav });
-    await expect(links.getByRole("link", { name: "Email" })).toHaveAttribute(
-      "href",
-      /^mailto:/,
-    );
     await expect(links.getByRole("link", { name: "GitHub" })).toHaveAttribute(
       "href",
       "https://github.com/amadzai",

@@ -1,11 +1,15 @@
 ---
 import { contactLinks, site } from "../data/site";
 
-const hoverColour: Record<(typeof contactLinks)[number]["label"], string> = {
-  Email: "hover:bg-red hover:text-white",
+// Email (first in the list) lives in the Contact dialog, so the hero links to the other two.
+const [, ...links] = contactLinks;
+
+const hoverColour: Record<(typeof links)[number]["label"], string> = {
   GitHub: "hover:bg-yellow hover:text-white",
   LinkedIn: "hover:bg-blue hover:text-white",
 };
+
+const pill = "press rounded-full border-3 border-ink px-4 py-1.5 font-medium";
 
 const [first, last] = site.name.split(" ");
 ---
@@ -38,15 +42,16 @@ const [first, last] = site.name.split(" ");
       {site.intro}
     </p>
     <nav class="links mt-6 flex flex-wrap gap-2.5" aria-label="Contact">
-      {contactLinks.map(({ label, href }) => (
-        <a
-          href={href}
-          target="_blank"
-          class:list={[
-            "press rounded-full border-3 border-ink px-4 py-1.5 font-medium",
-            hoverColour[label],
-          ]}
-        >
+      <button
+        type="button"
+        data-opens="contact"
+        aria-haspopup="dialog"
+        class:list={[pill, "cursor-pointer hover:bg-red hover:text-white"]}
+      >
+        Contact
+      </button>
+      {links.map(({ label, href }) => (
+        <a href={href} target="_blank" class:list={[pill, hoverColour[label]]}>
           {label}
         </a>
       ))}

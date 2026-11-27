@@ -63,7 +63,8 @@
     line-height: normal;
   }
 
-  a:focus-visible {
+  a:focus-visible,
+  button:focus-visible {
     outline: 3px solid var(--color-blue);
     outline-offset: 3px;
   }
