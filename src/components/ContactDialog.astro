@@ -43,17 +43,20 @@ const tile =
         <span class="shape absolute inset-0 bg-blue"></span>
         <span class="back absolute inset-0 grid place-items-center bg-ink"></span>
       </span>
-      {/* Level with the square's middle, starting just right of it (tile padding + square + gap); on phones, in the tile's top edge. */}
-      <span
-        class="rule top-6.75 left-15.5 phone:top-0.5 phone:left-14"
-        aria-hidden="true"
-      >
-        <svg viewBox="0 0 100 8" preserveAspectRatio="none">
-          <polygon points="0,0 100,3.25 100,4.75 0,8"></polygon>
-        </svg>
-      </span>
-      <span>
-        <b class="block text-[21px] leading-[1.1] font-bold">Copy email</b>
+      <span class="phone:flex-1">
+        <span class="flex items-center gap-3">
+          <b class="block text-[21px] leading-[1.1] font-bold">Copy email</b>
+          {/* On wide tiles, level with the square's middle, starting just right of it (tile padding + square + gap);
+              on phones, where the tile is a row, it runs on from the title instead. */}
+          <span
+            class="rule absolute top-6.75 right-4 left-15.5 h-3 phone:relative phone:inset-auto phone:flex-1"
+            aria-hidden="true"
+          >
+            <svg viewBox="0 0 100 8" preserveAspectRatio="none">
+              <polygon points="0,0 100,3.25 100,4.75 0,8"></polygon>
+            </svg>
+          </span>
+        </span>
         <small data-note class="mt-1 block text-sm opacity-80">
           To your clipboard
         </small>
@@ -186,9 +189,6 @@ const tile =
   }
 
   .rule {
-    position: absolute;
-    right: 16px;
-    height: 12px;
     pointer-events: none;
   }
 
