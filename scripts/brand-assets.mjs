@@ -79,7 +79,7 @@ try {
       <div style="position:relative;height:630px;padding:64px 72px;box-sizing:border-box">
         <div style="width:104px;height:104px">${mark}</div>
         <h1 style="margin-top:28px;font-size:132px;line-height:.85;font-weight:800;letter-spacing:-.03em;text-transform:lowercase">
-          <span style="display:block"></span><span style="display:block;color:var(--color-blue)"></span>
+          <span style="display:block"></span><span style="display:block;color:var(--color-red)"></span>
         </h1>
         <p style="margin-top:28px;max-width:24ch;font-size:30px;line-height:1.25"></p>
         <div style="position:absolute;right:64px;bottom:64px;width:600px">${art.outerHTML}</div>
