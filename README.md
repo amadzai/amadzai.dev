@@ -2,4 +2,4 @@
 
 # amadzai.dev
 
-Amad Zai's personal site, built with [Astro](https://astro.build).
+Built with [Astro](https://astro.build).
