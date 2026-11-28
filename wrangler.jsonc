@@ -1,0 +1,11 @@
+// Cloudflare Workers config: the built site in dist/ served as static assets, with no server code.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "amadzai-dev",
+  "compatibility_date": "2026-11-27",
+  "assets": {
+    "directory": "./dist",
+  },
+  // Serve on the apex domain; Cloudflare issues its certificate. www redirects here through a dashboard rule.
+  "routes": [{ "pattern": "amadzai.dev", "custom_domain": true }],
+}
