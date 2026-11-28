@@ -10,8 +10,7 @@ export const site = {
     linkedin: "https://www.linkedin.com/in/muhammadzainurin/",
     huggingface: "https://huggingface.co/amadzai",
     instagram: "https://www.instagram.com/amadzai",
-    // Opens straight to the 30-minute event.
-    call: "https://cal.com/amadzai/30min?overlayCalendar=true",
+    call: "https://cal.com/amadzai/30min",
   },
 } as const;
 

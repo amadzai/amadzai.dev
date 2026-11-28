@@ -73,10 +73,7 @@ test("Book a call opens the 30-minute cal.com event in a new tab", async ({
   await page.goto("/");
   await contact(page).click();
   const book = dialog(page).getByRole("link", { name: /Book a call/ });
-  await expect(book).toHaveAttribute(
-    "href",
-    "https://cal.com/amadzai/30min?overlayCalendar=true",
-  );
+  await expect(book).toHaveAttribute("href", "https://cal.com/amadzai/30min");
   await expect(book).toHaveAttribute("target", "_blank");
 });
 
