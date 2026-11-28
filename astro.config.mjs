@@ -9,6 +9,24 @@ export default defineConfig({
   site: "https://amadzai.dev",
   // Lists every page for search engines; robots.txt and the head point to it.
   integrations: [sitemap()],
+  // A Content Security Policy: only this site's own files, and inline scripts and styles Astro hashes, may load.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "base-uri 'none'",
+        "form-action 'none'",
+        "object-src 'none'",
+      ],
+      styleDirective: {
+        // Inline style attributes, such as each pill's colour. They can't run code.
+        resources: [
+          "'self'",
+          { resource: "'unsafe-inline'", kind: "attribute" },
+        ],
+      },
+    },
+  },
   fonts: [
     {
       name: "Jost",
