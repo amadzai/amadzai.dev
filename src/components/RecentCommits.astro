@@ -151,6 +151,19 @@ const segments = languageBreakdown.map(({ name, percent }, i) => ({
   </div>
 </section>
 
+<script>
+  // iOS keeps focus on a tapped segment when plain content is tapped, so its tooltip stayed open: let it go.
+  document.addEventListener("pointerdown", ({ target }) => {
+    const focused = document.activeElement;
+    if (
+      focused instanceof HTMLElement &&
+      focused.closest(".bar") &&
+      !focused.contains(target as Node)
+    )
+      focused.blur();
+  });
+</script>
+
 <style>
   /* One tooltip at a time: pointing at another segment closes the Tab-focused one's. */
   .bar:has(li:hover) li:not(:hover) .card {

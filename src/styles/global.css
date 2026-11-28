@@ -81,6 +81,15 @@
     line-height: normal;
   }
 
+  /* iOS keeps a tap's :hover until something "clickable" is tapped, so a language tooltip stayed open when tapping away.
+     A pointer cursor makes every tap count, and a clear highlight stops each one flashing grey. */
+  @media (hover: none) {
+    body {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+
   a:focus-visible,
   button:focus-visible {
     outline: 3px solid var(--color-blue);
