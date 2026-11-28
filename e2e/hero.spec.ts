@@ -61,8 +61,15 @@ test("reduced motion shows the composition with no animation", async ({
   await expect(hero(page).locator("svg")).toBeVisible();
 });
 
-test("keeps the hero's three buttons on one row at 320px", async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 640 });
+test("keeps the hero's three buttons on one row on a 320px phone", async ({
+  browser,
+}) => {
+  // A phone: its scrollbar overlays the page. A desktop's classic one (Linux CI) takes 15px of the row.
+  const phone = await browser.newContext({
+    viewport: { width: 320, height: 640 },
+    isMobile: true,
+  });
+  const page = await phone.newPage();
   await page.goto("/");
   const tops = await page
     .getByRole("navigation", { name: "Contact" })
@@ -72,6 +79,7 @@ test("keeps the hero's three buttons on one row at 320px", async ({ page }) => {
     );
   expect(tops).toHaveLength(3);
   expect(new Set(tops).size).toBe(1);
+  await phone.close();
 });
 
 for (const width of [320, 375, 414]) {
