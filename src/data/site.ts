@@ -10,6 +10,7 @@ export const site = {
     linkedin: "https://www.linkedin.com/in/muhammadzainurin/",
     huggingface: "https://huggingface.co/amadzai",
     instagram: "https://www.instagram.com/amadzai",
+    x: "https://x.com/amadzai",
     call: "https://cal.com/amadzai/30min",
   },
 } as const;

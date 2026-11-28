@@ -26,6 +26,7 @@ test("has a title, description, canonical URL and share tags", async ({
     ["og:image:width", "1200"],
     ["og:image:height", "630"],
     ["twitter:card", "summary_large_image"],
+    ["twitter:creator", "@amadzai"],
   ]) {
     await expect(head.locator(meta(property))).toHaveAttribute(
       "content",
@@ -123,6 +124,7 @@ test("describes Amad as a Person for search engines", async ({ page }) => {
       "https://github.com/amadzai",
       "https://huggingface.co/amadzai",
       "https://www.instagram.com/amadzai",
+      "https://x.com/amadzai",
     ],
   });
 });

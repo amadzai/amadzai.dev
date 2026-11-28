@@ -26,6 +26,7 @@ const person = {
     site.links.github,
     site.links.huggingface,
     site.links.instagram,
+    site.links.x,
   ],
 };
 ---
@@ -57,6 +58,7 @@ const person = {
       content={`The ${site.name.toLowerCase()} logo and name`}
     />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@amadzai" />
     <script type="application/ld+json" set:html={JSON.stringify(person)} />
     <Font cssVariable="--font-jost" preload />
   </head>
