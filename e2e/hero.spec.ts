@@ -73,3 +73,22 @@ test("keeps the hero's three buttons on one row at 320px", async ({ page }) => {
   expect(tops).toHaveLength(3);
   expect(new Set(tops).size).toBe(1);
 });
+
+for (const width of [320, 375, 414]) {
+  test(`stretches "amad" across the hero on a ${width}px phone`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    const share = await page.locator("#hero-name").evaluate((name) => {
+      // The text, not its box: a block always fills the column.
+      const range = document.createRange();
+      range.selectNodeContents(name.querySelector(".name")!);
+      return range.getBoundingClientRect().width / name.clientWidth;
+    });
+    expect(share).toBeGreaterThan(0.95);
+    expect(share).toBeLessThanOrEqual(1);
+  });
+}

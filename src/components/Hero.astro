@@ -29,10 +29,11 @@ const [first, last] = site.name.split(" ");
   aria-labelledby="hero-name"
   class="mt-8 grid grid-cols-[auto_1fr] items-center gap-8 phone:grid-cols-1"
 >
-  <div>
+  {/* On phones the name sizes to this column (cqw), so "amad" runs edge to edge. */}
+  <div class="phone:@container">
     <h1
       id="hero-name"
-      class="text-[clamp(84px,12vw,150px)] leading-[.85] font-extrabold tracking-[-0.03em] lowercase"
+      class="text-[clamp(84px,12vw,150px)] leading-[.85] font-extrabold tracking-[-0.03em] lowercase phone:text-[39.5cqw]"
     >
       <span class="name">{first}</span>
       <span class="name text-red">{last}</span>
