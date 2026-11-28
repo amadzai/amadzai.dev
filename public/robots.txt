@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://amadzai.dev/sitemap-index.xml

@@ -126,3 +126,24 @@ test("describes Amad as a Person for search engines", async ({ page }) => {
     ],
   });
 });
+
+test("lists the pages in a sitemap that robots.txt and the head point to", async ({
+  page,
+  request,
+}) => {
+  const index = await (await request.get("/sitemap-index.xml")).text();
+  expect(index).toContain("<loc>https://amadzai.dev/sitemap-0.xml</loc>");
+  const pages = await (await request.get("/sitemap-0.xml")).text();
+  expect(pages).toContain("<loc>https://amadzai.dev/</loc>");
+
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).toMatch(
+    /^Sitemap: https:\/\/amadzai\.dev\/sitemap-index\.xml$/m,
+  );
+
+  await page.goto("/");
+  await expect(page.locator('head link[rel="sitemap"]')).toHaveAttribute(
+    "href",
+    "/sitemap-index.xml",
+  );
+});

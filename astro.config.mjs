@@ -1,11 +1,14 @@
 // @ts-check
 import { defineConfig, envField, fontProviders } from "astro/config";
 
+import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://amadzai.dev",
+  // Lists every page for search engines; robots.txt and the head point to it.
+  integrations: [sitemap()],
   fonts: [
     {
       name: "Jost",
