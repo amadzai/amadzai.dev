@@ -21,10 +21,11 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
     work
   </SectionHeading>
   {/* One shared grid, so each row's summary starts in the same column. */}
-  <ol class="grid grid-cols-[56px_auto_1fr_auto] phone:grid-cols-[44px_1fr]">
+  {/* On tablets the dates move under the role, so the summary keeps a wide column. */}
+  <ol class="grid grid-cols-[56px_auto_1fr_auto] tablet:grid-cols-[56px_auto_1fr] phone:grid-cols-[44px_1fr]">
     {roles.map(({ data }) => (
-      <li class="group relative col-span-full grid grid-cols-subgrid items-center gap-5 phone:gap-x-7 phone:gap-y-2 border-b border-ink/20 py-4.5">
-        <div class="size-14 phone:size-11">
+      <li class="group relative col-span-full grid grid-cols-subgrid items-center gap-5 tablet:gap-y-1 phone:gap-x-7 phone:gap-y-2 border-b border-ink/20 py-4.5">
+        <div class="size-14 tablet:row-span-2 phone:size-11">
           {/* 112px covers the 56px logo box at 2x density. */}
           <Image
             src={data.logo}
@@ -47,10 +48,10 @@ const isoMonth = (date: Date) => date.toISOString().slice(0, 7);
           </b>{" "}
           <small class="text-[16px]">{data.role}</small>
         </div>{" "}
-        <p class="pl-9 text-[15px] text-balance phone:col-start-2 phone:pl-0">
+        <p class="pl-9 text-[15px] text-balance tablet:row-span-2 phone:col-start-2 phone:pl-0">
           {data.summary}
         </p>{" "}
-        <span class="text-[15px] font-medium tabular-nums phone:col-start-2">
+        <span class="text-[15px] font-medium tabular-nums tablet:col-start-2 tablet:pl-2.5 phone:col-start-2">
           <time datetime={isoMonth(data.start)}>{formatMonth(data.start)}</time>{" "}
           – <time datetime={isoMonth(data.end)}>{formatMonth(data.end)}</time>
         </span>

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { contrast } from "./contrast";
 
 test("lists each Work role newest first, with a one-line summary", async ({
@@ -68,5 +68,48 @@ test("tints each company name on hover, keeping large-text contrast", async ({
       ];
     });
     expect(contrast(fg, bg)).toBeGreaterThanOrEqual(3);
+  }
+});
+
+// Where a row's parts sit: the role, the summary and the dates.
+const layout = (page: Page) =>
+  page
+    .getByRole("region", { name: "work" })
+    .getByRole("listitem")
+    .evaluateAll((rows) =>
+      rows.map((row) => {
+        const box = (el: Element | null) => el!.getBoundingClientRect();
+        return {
+          role: box(row.querySelector("small")),
+          summary: box(row.querySelector("p")),
+          dates: box(row.querySelector("time")!.parentElement),
+          // The first date, not its box: the box can carry padding.
+          datesStart: box(row.querySelector("time")).left,
+        };
+      }),
+    );
+
+test("puts a Work row's dates under the role on tablets, leaving the summary a wide column", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 768, height: 1024 });
+  await page.goto("/");
+
+  for (const { role, summary, dates, datesStart } of await layout(page)) {
+    expect(dates.top).toBeGreaterThanOrEqual(role.bottom);
+    expect(datesStart).toBeCloseTo(role.left, 0);
+    expect(summary.left).toBeGreaterThan(dates.right);
+    expect(summary.width).toBeGreaterThan(300);
+  }
+});
+
+test("keeps a Work row's dates at the end of the row on desktops", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/");
+
+  for (const { summary, dates } of await layout(page)) {
+    expect(dates.left).toBeGreaterThan(summary.right);
   }
 });

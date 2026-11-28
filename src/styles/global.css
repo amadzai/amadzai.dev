@@ -3,6 +3,9 @@
 /* Phone layout: matches the design's max-width: 720px breakpoint exactly. */
 @custom-variant phone (@media (max-width: 720px));
 
+/* Tablets: between the phone layout and the full desktop row. */
+@custom-variant tablet (@media (min-width: 721px) and (max-width: 1023px));
+
 /* Plain :hover, as in the design, so a tap on touch screens also shows the effect. */
 @custom-variant hover (&:hover);
 

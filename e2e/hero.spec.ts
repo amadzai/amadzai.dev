@@ -60,3 +60,16 @@ test("reduced motion shows the composition with no animation", async ({
   expect(await playStates(page)).toEqual([]);
   await expect(hero(page).locator("svg")).toBeVisible();
 });
+
+test("keeps the hero's three buttons on one row at 320px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto("/");
+  const tops = await page
+    .getByRole("navigation", { name: "Contact" })
+    .locator("a, button")
+    .evaluateAll((all) =>
+      all.map((el) => Math.round(el.getBoundingClientRect().top)),
+    );
+  expect(tops).toHaveLength(3);
+  expect(new Set(tops).size).toBe(1);
+});
