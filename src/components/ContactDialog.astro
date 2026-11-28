@@ -88,6 +88,8 @@ const tile =
   const note = copyButton.querySelector("[data-note]")!;
   const status = dialog.querySelector("[data-status]")!;
   let resetTimer: ReturnType<typeof setTimeout>;
+  // Only the hover that clicked rests; one that left and came back is a fresh hover.
+  let isRestDue = false;
 
   // The hero and the footer each have a Contact button.
   document
@@ -114,6 +116,7 @@ const tile =
   };
 
   copyButton.addEventListener("pointerleave", () => {
+    isRestDue = false;
     delete copyButton.dataset.rested;
   });
 
@@ -147,11 +150,12 @@ const tile =
       ? `Email copied: ${site.email}`
       : `Couldn't copy. The email is ${site.email}`;
     copyButton.dataset.copied = "";
+    isRestDue = true;
     clearTimeout(resetTimer);
     resetTimer = setTimeout(() => {
       resetCopy();
       // Rest in the tile's own colours, though the cursor (or a sticky tap) still hovers it.
-      copyButton.dataset.rested = "";
+      if (isRestDue) copyButton.dataset.rested = "";
     }, COPIED_FOR_MS);
   });
 

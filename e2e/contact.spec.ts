@@ -125,6 +125,28 @@ test.describe("after Copied resets", () => {
     await expect(copy).toContainText("To your clipboard");
     expect(await colours()).toEqual(resting);
   });
+
+  test("the copy tile keeps its hover colours if the cursor left and came back during Copied", async ({
+    page,
+  }) => {
+    await page.clock.install();
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await contact(page).click();
+    const copy = dialog(page).getByRole("button", { name: /Copy email/ });
+    const background = () =>
+      copy.evaluate((tile) => getComputedStyle(tile).backgroundColor);
+    await copy.hover();
+    const hovered = await background();
+
+    await copy.click();
+    await expect(copy).toContainText("Copied");
+    await page.mouse.move(0, 0);
+    await copy.hover();
+    await page.clock.runFor(3000);
+    await expect(copy).toContainText("To your clipboard");
+    expect(await background()).toBe(hovered);
+  });
 });
 
 test("the footer's Contact opens the same dialog", async ({ page }) => {
