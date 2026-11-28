@@ -17,7 +17,19 @@ test("sets a Content Security Policy that the page's own scripts and files all p
     'head meta[http-equiv="content-security-policy"]',
   );
   await expect(policy).toHaveAttribute("content", /default-src 'self'/);
-  await expect(policy).toHaveAttribute("content", /script-src 'self' 'sha256-/);
+  await expect(policy).toHaveAttribute(
+    "content",
+    /script-src 'self' [^;]*'sha256-/,
+  );
+  // Cloudflare injects its Web Analytics beacon on the live site; it loads a script and reports back.
+  await expect(policy).toHaveAttribute(
+    "content",
+    /script-src [^;]*https:\/\/static\.cloudflareinsights\.com/,
+  );
+  await expect(policy).toHaveAttribute(
+    "content",
+    /connect-src 'self' https:\/\/cloudflareinsights\.com/,
+  );
 
   // Contact's dialog opens only if its script was allowed to run.
   await page

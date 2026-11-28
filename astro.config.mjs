@@ -9,15 +9,20 @@ export default defineConfig({
   site: "https://amadzai.dev",
   // Lists every page for search engines; robots.txt and the head point to it.
   integrations: [sitemap()],
-  // A Content Security Policy: only this site's own files, and inline scripts and styles Astro hashes, may load.
+  // A Content Security Policy: only this site's own files, the inline scripts and styles Astro hashes,
+  // and Cloudflare's Web Analytics beacon (injected on the live site) may load.
   security: {
     csp: {
       directives: [
         "default-src 'self'",
+        "connect-src 'self' https://cloudflareinsights.com",
         "base-uri 'none'",
         "form-action 'none'",
         "object-src 'none'",
       ],
+      scriptDirective: {
+        resources: ["'self'", "https://static.cloudflareinsights.com"],
+      },
       styleDirective: {
         // Inline style attributes, such as each pill's colour. They can't run code.
         resources: [
