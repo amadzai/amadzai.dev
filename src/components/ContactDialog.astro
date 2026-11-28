@@ -6,10 +6,12 @@ const tile =
   "tile press relative flex cursor-pointer flex-col justify-between gap-7 border-3 border-ink bg-paper p-4 text-left phone:flex-row phone:items-center phone:justify-start phone:gap-4 phone:p-3.5";
 ---
 
+{/* tabindex -1: the dialog itself takes focus on open (see the script), not Close. */}
 <dialog
   id="contact"
   aria-labelledby="contact-title"
-  class="m-auto w-[min(640px,calc(100%-32px))] backdrop:bg-ink/70 border-3 border-ink bg-paper px-7 pt-7 pb-6 text-ink shadow-[-12px_12px_0_var(--color-ink)] phone:px-4.5 phone:pt-5.5 phone:pb-4.5 phone:shadow-[-8px_8px_0_var(--color-ink)]"
+  tabindex="-1"
+  class="m-auto outline-none w-[min(640px,calc(100%-32px))] backdrop:bg-ink/70 border-3 border-ink bg-paper px-7 pt-7 pb-6 text-ink shadow-[-12px_12px_0_var(--color-ink)] phone:px-4.5 phone:pt-5.5 phone:pb-4.5 phone:shadow-[-8px_8px_0_var(--color-ink)]"
 >
   <div class="flex items-center gap-3.5">
     <span
@@ -92,11 +94,13 @@ const tile =
   let isRestDue = false;
 
   // The hero and the footer each have a Contact button.
-  document
-    .querySelectorAll("[data-opens=contact]")
-    .forEach((button) =>
-      button.addEventListener("click", () => dialog.showModal()),
-    );
+  document.querySelectorAll("[data-opens=contact]").forEach((button) =>
+    button.addEventListener("click", () => {
+      dialog.showModal();
+      // showModal focuses Close, and a phone then rings it in blue; focus the dialog instead. Tab still reaches Close first.
+      dialog.focus();
+    }),
+  );
   dialog
     .querySelector("[data-closes]")!
     .addEventListener("click", () => dialog.close());

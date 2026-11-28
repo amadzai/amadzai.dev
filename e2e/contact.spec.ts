@@ -19,6 +19,17 @@ test("Contact opens a dialog by keyboard, Escape closes it, and focus returns to
   await expect(contact(page)).toBeFocused();
 });
 
+test("a tap on Contact focuses the dialog itself, so no button shows a focus ring", async ({
+  browser,
+}) => {
+  const phone = await browser.newContext({ hasTouch: true, isMobile: true });
+  const page = await phone.newPage();
+  await page.goto("/");
+  await contact(page).tap();
+  await expect(dialog(page)).toBeFocused();
+  await phone.close();
+});
+
 test.describe("with clipboard access", () => {
   test.use({ permissions: ["clipboard-read", "clipboard-write"] });
 
