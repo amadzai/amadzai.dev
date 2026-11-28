@@ -10,5 +10,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm build && pnpm astro preview --port 4322 --ignore-lock",
     url: baseURL,
+    // The build type-checks and fetches from GitHub first; a cold CI runner can take longer than the 60s default.
+    timeout: 180_000,
   },
 });

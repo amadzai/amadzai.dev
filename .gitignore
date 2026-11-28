@@ -2,6 +2,7 @@
 dist/
 .astro/
 .wrangler/
+.lighthouseci/
 
 # dependencies
 node_modules/
